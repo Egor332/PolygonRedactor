@@ -19,7 +19,7 @@ namespace PolygonRedactor
             base.OnPaint(e);
             if (shouldDrawLine)
             {
-                DrawBresenham(e.Graphics, new Point(100, 100), new Point(500, 500));
+                DrawBresenham(e.Graphics, new Point(100, 100), new Point(300, 200));
             }
 
         }
@@ -52,8 +52,8 @@ namespace PolygonRedactor
             {
                 g.FillRectangle(brush, x, y, 1, 1);
                 x++;
-                if (p > 0) { p += pGreater; } 
-                else { p += pLess; y++; }
+                if (p > 0) { p += pGreater; y++; } 
+                else { p += pLess; }
                 
             }
             
