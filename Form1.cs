@@ -93,9 +93,7 @@ namespace PolygonRedactor
                 _bresenham.Draw(_startPoint, _currentPoint, e.Graphics);
             }
 
-        }
-
-        
+        }    
             
         
     }

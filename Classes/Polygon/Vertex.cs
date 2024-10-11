@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 
 namespace PolygonRedactor.Classes.Polygon
 {
-    internal class Edge
+    internal class Vertex
     {
-        public Vertex start;
-        public Vertex end;
+        public Point position;
 
-        public Edge(Vertex start, Vertex end)
+        public Vertex(Point position)
         {
-            this.start = start;
-            this.end = end;
+            this.position = position;
         }
     }
 }
