@@ -5,12 +5,15 @@ using System.ComponentModel;
 
 namespace PolygonRedactor
 {
+
     public partial class Form1 : Form
     {
         private bool _isDrawing = false;
-        private bool _lineFinished = false;
         private Point _startPoint;
         private Point _currentPoint;
+
+        // private bool _vertexSelected = false;
+        private Vertex? _vertexSelected = null;
 
         private Polygon _polygon = new Polygon();
 
@@ -34,30 +37,32 @@ namespace PolygonRedactor
                     break;
                 case ControlButtonStates.Stop:
                     StopDrawing();
+                    StartModifying();
                     break;
                 case ControlButtonStates.Clean:
+                    StopModifying();
                     CleanPolygon();
                     break;
             }
-            
+
 
             controlButtonState = (ControlButtonStates)(((int)controlButtonState + 1) % 3);
             ControlButton.Text = (controlButtonState).ToString();
 
-            
+
         }
 
         private void StartDrawing()
         {
-            this.MouseDown += Form_MouseDown;
-            this.MouseMove += Form_MouseMove;
+            this.MouseDown += Draw_MouseDown;
+            this.MouseMove += Draw_MouseMove;
         }
 
         private void StopDrawing()
         {
-            _polygon.AddFinalEdge();            
-            this.MouseDown -= Form_MouseDown;
-            this.MouseMove -= Form_MouseMove;
+            _polygon.AddFinalEdge();
+            this.MouseDown -= Draw_MouseDown;
+            this.MouseMove -= Draw_MouseMove;
             _isDrawing = false;
             this.Invalidate();
         }
@@ -68,7 +73,7 @@ namespace PolygonRedactor
             this.Invalidate();
         }
 
-        private void Form_MouseDown(object sender, MouseEventArgs e)
+        private void Draw_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -77,21 +82,21 @@ namespace PolygonRedactor
                     _startPoint = e.Location;
                     _polygon.AddNewVertex(_startPoint);
                     _isDrawing = true;
-                    
-                } 
+
+                }
                 else
                 {
                     _startPoint = e.Location;
                     _polygon.AddNewVertex(_startPoint);
                     _polygon.AddNewEdge();
-                    
-                    
+
+
                 }
             }
             this.Invalidate();
         }
 
-        private void Form_MouseMove(object sender, MouseEventArgs e)
+        private void Draw_MouseMove(object sender, MouseEventArgs e)
         {
             if (_isDrawing)
             {
@@ -100,20 +105,59 @@ namespace PolygonRedactor
             }
         }
 
-        protected override void OnPaint(PaintEventArgs e)
+        private void StartModifying()
+        {
+            this.MouseDown += Modify_MouseDown;
+            this.MouseMove += Modify_MouseMove;
+        }
+
+        private void StopModifying()
+        {
+            this.MouseDown -= Modify_MouseDown;
+            this.MouseMove -= Modify_MouseMove;
+        }
+
+        private void Modify_MouseDown(object sender, MouseEventArgs e)
+        {
+            if ((e.Button == MouseButtons.Left) && (_vertexSelected == null))
+            {
+                foreach (Vertex v in _polygon.vertices)
+                {
+                    if (v.CheckIsInArea(e.Location))
+                    {
+                        v.isSelected = true;
+                        _vertexSelected = v;
+                        break;
+                    }
+                }
+
+            }
+            else if ((e.Button == MouseButtons.Left))
+            {
+                _vertexSelected.isSelected = false;
+                _vertexSelected = null;
+            }
+            this.Invalidate();
+        }
+
+        private void Modify_MouseMove(object sender, MouseEventArgs e)
         {
 
+        }
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
             base.OnPaint(e);
             _bresenham.g = e.Graphics;
-            _polygon.Draw(_bresenham);
+            _polygon.DrawEdges(_bresenham);
+            _polygon.DrawVertices(e.Graphics);
             if (_isDrawing)
             {
                 _bresenham.Draw(_startPoint, _currentPoint);
             }
 
-        }    
-            
-        
+        }
+
+
     }
 }

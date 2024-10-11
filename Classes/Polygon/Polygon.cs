@@ -21,11 +21,29 @@ namespace PolygonRedactor.Classes.Polygon
             edges.Add(new Edge(vertices[vertices.Count - 1], vertices[vertices.Count - 2]));
         }
 
-        public void Draw(Bresenham bresenham)
+        public void DrawEdges(Bresenham bresenham)
         {
             foreach (Edge e in edges)
             {
                 bresenham.Draw(e.start.position, e.end.position);
+            }
+        }
+
+        public void DrawVertices(System.Drawing.Graphics g)
+        {
+            foreach (Vertex v in vertices)
+            {
+
+                if (v.isSelected)
+                {
+                    Brush brush = Brushes.Red;
+                    g.FillEllipse(brush, v.position.X - v.radius, v.position.Y - v.radius, 2 * v.radius, 2 * v.radius);
+                }
+                else
+                {
+                    Brush brush = Brushes.Blue;
+                    g.FillEllipse(brush, v.position.X - v.radius, v.position.Y - v.radius, 2 * v.radius, 2 * v.radius);
+                }
             }
         }
 

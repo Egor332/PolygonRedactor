@@ -9,10 +9,22 @@ namespace PolygonRedactor.Classes.Polygon
     internal class Vertex
     {
         public Point position;
+        public int radius = 3;
+        public bool isSelected = false;
 
         public Vertex(Point position)
         {
             this.position = position;
+        }
+
+        public bool CheckIsInArea(Point point)
+        {
+            if (((point.X >= position.X - radius) && (point.X <= position.X + radius))
+                && ((point.Y >= position.Y - radius) && (point.Y <= position.Y + radius)))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
