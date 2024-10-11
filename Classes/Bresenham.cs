@@ -11,14 +11,15 @@ namespace PolygonRedactor.Classes
         private System.Drawing.Graphics _g;
         private System.Drawing.SolidBrush _brush;
 
-        public Bresenham(System.Drawing.Graphics g) 
+        public Bresenham() 
         { 
-            _g = g;
+            // _g;
             _brush = new SolidBrush(Color.Black);
         }
 
-        public void Draw(Point start, Point end)
+        public void Draw(Point start, Point end, Graphics g)
         {
+            _g = g;
             int x0, x1, y0, y1;
             x0 = start.X;
             y0 = start.Y;
