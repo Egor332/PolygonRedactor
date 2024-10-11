@@ -142,7 +142,11 @@ namespace PolygonRedactor
 
         private void Modify_MouseMove(object sender, MouseEventArgs e)
         {
-
+            if (_vertexSelected != null)
+            {
+                _vertexSelected.position = e.Location;
+                this.Invalidate();
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
