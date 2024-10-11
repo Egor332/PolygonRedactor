@@ -1,4 +1,5 @@
 using PolygonRedactor.Classes;
+using PolygonRedactor.Classes.Polygon;
 using PolygonRedactor.Enums;
 using System.ComponentModel;
 
@@ -11,10 +12,11 @@ namespace PolygonRedactor
         private Point _startPoint;
         private Point _currentPoint;
 
-        protected List<(Point, Point)> polygonEdges = new List<(Point, Point)>();
+        private Polygon _polygon = new Polygon();
+
         protected ControlButtonStates controlButtonState = ControlButtonStates.Draw;
 
-        private Bresenham? _bresenham;
+        private Bresenham? _bresenham = new Bresenham();
 
         public Form1()
         {
@@ -27,7 +29,6 @@ namespace PolygonRedactor
             switch (controlButtonState)
             {
                 case ControlButtonStates.Draw:
-                    _bresenham = new Bresenham();
                     StartDrawing();
                     this.Invalidate();
                     break;
@@ -35,6 +36,7 @@ namespace PolygonRedactor
                     StopDrawing();
                     break;
                 case ControlButtonStates.Clean:
+                    CleanPolygon();
                     break;
             }
             
@@ -53,8 +55,17 @@ namespace PolygonRedactor
 
         private void StopDrawing()
         {
+            _polygon.AddFinalEdge();            
             this.MouseDown -= Form_MouseDown;
             this.MouseMove -= Form_MouseMove;
+            _isDrawing = false;
+            this.Invalidate();
+        }
+
+        private void CleanPolygon()
+        {
+            _polygon = new Polygon();
+            this.Invalidate();
         }
 
         private void Form_MouseDown(object sender, MouseEventArgs e)
@@ -64,13 +75,17 @@ namespace PolygonRedactor
                 if (!_isDrawing)
                 {
                     _startPoint = e.Location;
+                    _polygon.AddNewVertex(_startPoint);
                     _isDrawing = true;
-                    _lineFinished = false;
+                    
                 } 
                 else
                 {
-                    _lineFinished = true;
-                    _isDrawing = false;
+                    _startPoint = e.Location;
+                    _polygon.AddNewVertex(_startPoint);
+                    _polygon.AddNewEdge();
+                    
+                    
                 }
             }
             this.Invalidate();
@@ -78,7 +93,7 @@ namespace PolygonRedactor
 
         private void Form_MouseMove(object sender, MouseEventArgs e)
         {
-            if (_isDrawing && !_lineFinished)
+            if (_isDrawing)
             {
                 _currentPoint = e.Location;
                 this.Invalidate();
@@ -87,10 +102,14 @@ namespace PolygonRedactor
 
         protected override void OnPaint(PaintEventArgs e)
         {
+
+
             base.OnPaint(e);
+            _bresenham.g = e.Graphics;
+            _polygon.Draw(_bresenham);
             if (_isDrawing)
             {
-                _bresenham.Draw(_startPoint, _currentPoint, e.Graphics);
+                _bresenham.Draw(_startPoint, _currentPoint);
             }
 
         }    

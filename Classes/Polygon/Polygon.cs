@@ -20,5 +20,18 @@ namespace PolygonRedactor.Classes.Polygon
         {
             edges.Add(new Edge(vertices[vertices.Count - 1], vertices[vertices.Count - 2]));
         }
+
+        public void Draw(Bresenham bresenham)
+        {
+            foreach (Edge e in edges)
+            {
+                bresenham.Draw(e.start.position, e.end.position);
+            }
+        }
+
+        public void AddFinalEdge()
+        {
+            edges.Add(new Edge(vertices[vertices.Count - 1], vertices[0]));
+        }
     }
 }
