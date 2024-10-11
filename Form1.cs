@@ -1,17 +1,39 @@
+using PolygonRedactor.Classes;
+using PolygonRedactor.Enums;
+using System.ComponentModel;
+
 namespace PolygonRedactor
 {
     public partial class Form1 : Form
     {
         protected bool shouldDrawLine = false;
+        protected List<(Point, Point)> polygonEdges = new List<(Point, Point)>();
+        protected ControlButtonStates controlButtonState = ControlButtonStates.Draw;
+
         public Form1()
         {
             InitializeComponent();
+            ControlButton.Text = (controlButtonState).ToString();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void ControlButton_Click(object sender, EventArgs e)
         {
+            switch (controlButtonState)
+            {
+                case ControlButtonStates.Draw:
+                    break;
+                case ControlButtonStates.Stop:
+                    break;
+                case ControlButtonStates.Clean:
+                    break;
+            }
             shouldDrawLine = true;
             this.Invalidate();
+
+            controlButtonState = (ControlButtonStates)(((int)controlButtonState + 1) % 3);
+            ControlButton.Text = (controlButtonState).ToString();
+
+            
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -19,44 +41,14 @@ namespace PolygonRedactor
             base.OnPaint(e);
             if (shouldDrawLine)
             {
-                DrawBresenham(e.Graphics, new Point(100, 100), new Point(300, 200));
+                Bresenham bresenham = new Bresenham(e.Graphics);
+                bresenham.Draw(new Point(200, 600), new Point(100, 100));
             }
 
         }
 
-        private void DrawBresenham(Graphics g, Point start, Point end)
-        {
-            int dx = (end.X - start.X);
-            int dy = (end.Y - start.Y);
-            int pLess = 2 * dy;
-            int pGreater = 2*(dy - dx);
-            int p = 2 * dy - dx;          
-
-            int x, y, xEnd;
-
-
-            if (start.X > end.X)
-            {
-                x = end.X;
-                y = end.Y;
-                xEnd = start.X;
-            }
-            else
-            {
-                x = start.X;
-                y = start.Y;
-                xEnd = end.X;
-            }
-            SolidBrush brush = new SolidBrush(Color.Black);
-            while (xEnd > x)
-            {
-                g.FillRectangle(brush, x, y, 1, 1);
-                x++;
-                if (p > 0) { p += pGreater; y++; } 
-                else { p += pLess; }
-                
-            }
+        
             
-        }
+        
     }
 }
