@@ -177,7 +177,7 @@ namespace PolygonRedactor
             }
             if (_edgeSelected != null)
             {
-                _edgeSelected.MoveEdge(e.Location);
+                _edgeSelected.MoveEdge(e.Location, this.Width, this.Height);
                 _edgeSelected.pressPoint = e.Location;
                 this.Invalidate();
             }

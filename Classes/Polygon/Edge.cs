@@ -43,18 +43,34 @@ namespace PolygonRedactor.Classes.Polygon
             return Math.Sqrt(Math.Pow((p1.X - p2.X), 2) + Math.Pow((p1.Y - p2.Y), 2));
         }
 
-        public void MoveEdge(Point p)
+        public void MoveEdge(Point p, int width, int height)
         {            
             int dx = p.X - pressPoint.Value.X;
             int dy = p.Y - pressPoint.Value.Y;
 
-            start.position.X += dx;
-            start.position.Y += dy;
+            if (ValidatePositionOnAxis(start.position.X + dx, end.position.X + dx, width - 20)) 
+            {
+                start.position.X += dx;
+                end.position.X += dx;
+            }
 
-            end.position.X += dx;
-            end.position.Y += dy;
+
+
+            if (ValidatePositionOnAxis(start.position.Y + dy, end.position.Y + dy, height - 35))
+            {
+                start.position.Y += dy;
+                end.position.Y += dy;
+            }
         }
 
+        private bool ValidatePositionOnAxis(int x1, int x2, int size)
+        {
+            if ((x1 < 0) || (x2 < 0) || (x1 > size) || (x2 > size))
+            {
+                return false;
+            }
+            return true;
+        }
         
     }
 }
