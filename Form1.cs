@@ -14,6 +14,7 @@ namespace PolygonRedactor
 
         // private bool _vertexSelected = false;
         private Vertex? _vertexSelected = null;
+        private Edge? _edgeSelected = null;
 
         private Polygon _polygon = new Polygon();
 
@@ -24,6 +25,7 @@ namespace PolygonRedactor
         public Form1()
         {
             InitializeComponent();
+            this.DoubleBuffered = true;
             ControlButton.Text = (controlButtonState).ToString();
         }
 
@@ -119,23 +121,49 @@ namespace PolygonRedactor
 
         private void Modify_MouseDown(object sender, MouseEventArgs e)
         {
-            if ((e.Button == MouseButtons.Left) && (_vertexSelected == null))
+            if ((e.Button == MouseButtons.Left) && (_vertexSelected == null) &&
+                (_edgeSelected == null))
             {
                 foreach (Vertex v in _polygon.vertices)
                 {
                     if (v.CheckIsInArea(e.Location))
                     {
                         v.isSelected = true;
-                        _vertexSelected = v;
+                        _vertexSelected = v;                        
                         break;
                     }
                 }
 
-            }
-            else if ((e.Button == MouseButtons.Left))
+                if (_vertexSelected == null)
+                {
+                    foreach (Edge edge in _polygon.edges)
+                    {
+                        if (edge.IsOnEdge(e.Location))
+                        {
+                            edge.isSelected = true;
+                            _edgeSelected = edge;
+                            _edgeSelected.pressPoint = e.Location;
+                            break;
+                        }
+                    }
+
+                }
+
+
+            }            
+            else if ((e.Button == MouseButtons.Left) )
             {
-                _vertexSelected.isSelected = false;
-                _vertexSelected = null;
+                if (_vertexSelected == null)
+                {
+                    _edgeSelected.isSelected = false;
+                    _edgeSelected.pressPoint = null;
+                    _edgeSelected = null;
+                }
+                else 
+                {
+                    _vertexSelected.isSelected = false;
+                    _vertexSelected = null;
+                }
             }
             this.Invalidate();
         }
@@ -147,14 +175,19 @@ namespace PolygonRedactor
                 _vertexSelected.position = e.Location;
                 this.Invalidate();
             }
+            if (_edgeSelected != null)
+            {
+                _edgeSelected.MoveEdge(e.Location);
+                _edgeSelected.pressPoint = e.Location;
+                this.Invalidate();
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
             _bresenham.g = e.Graphics;
-            _polygon.DrawEdges(_bresenham);
-            _polygon.DrawVertices(e.Graphics);
+            _polygon.DrawPolygon(_bresenham, e.Graphics);
             if (_isDrawing)
             {
                 _bresenham.Draw(_startPoint, _currentPoint);

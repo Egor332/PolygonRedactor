@@ -9,12 +9,12 @@ namespace PolygonRedactor.Classes
     internal class Bresenham
     {
         public System.Drawing.Graphics g;
-        private System.Drawing.SolidBrush _brush;
+        public System.Drawing.SolidBrush brush;
 
         public Bresenham() 
         { 
             // g;
-            _brush = new SolidBrush(Color.Black);
+            brush = new SolidBrush(Color.Black);
         }
 
         public void Draw(Point start, Point end)
@@ -62,7 +62,7 @@ namespace PolygonRedactor.Classes
             int y = y0;
             for (int x = x0; x <= x1; x++)
             {
-                g.FillRectangle(_brush, x, y, 1, 1);
+                g.FillRectangle(brush, x, y, 1, 1);
                 if (D > 0)
                 {
                     y = y + yi;
@@ -89,7 +89,7 @@ namespace PolygonRedactor.Classes
             int x = x0;
             for (int y = y0; y<= y1; y++)
             {
-                g.FillRectangle(_brush, x, y, 1, 1);
+                g.FillRectangle(brush, x, y, 1, 1);
                 if (D > 0)
                 {
                     x += xi;

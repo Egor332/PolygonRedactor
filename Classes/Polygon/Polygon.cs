@@ -21,15 +21,25 @@ namespace PolygonRedactor.Classes.Polygon
             edges.Add(new Edge(vertices[vertices.Count - 1], vertices[vertices.Count - 2]));
         }
 
-        public void DrawEdges(Bresenham bresenham)
+        private void DrawEdges(Bresenham bresenham)
         {
             foreach (Edge e in edges)
             {
-                bresenham.Draw(e.start.position, e.end.position);
+                if (e.isSelected)
+                {
+                    bresenham.brush = new SolidBrush(Color.Red);
+                    bresenham.Draw(e.start.position, e.end.position);
+                    bresenham.brush = new SolidBrush(Color.Black);
+                }
+                else
+                {
+                    bresenham.Draw(e.start.position, e.end.position);
+                }
+                
             }
         }
 
-        public void DrawVertices(System.Drawing.Graphics g)
+        private void DrawVertices(System.Drawing.Graphics g)
         {
             foreach (Vertex v in vertices)
             {
@@ -50,6 +60,24 @@ namespace PolygonRedactor.Classes.Polygon
         public void AddFinalEdge()
         {
             edges.Add(new Edge(vertices[vertices.Count - 1], vertices[0]));
+        }
+
+        public void DrawPolygon(Bresenham bresenham, Graphics g) 
+        {
+
+            if (vertices.Count >= 3)
+            {
+                Point[] points = new Point[vertices.Count];
+                int i = 0;
+                foreach (Vertex v in vertices)
+                {
+                    points[i] = v.position;
+                    i++;
+                }
+                g.FillPolygon(Brushes.LightGray, points);
+            }
+            DrawEdges(bresenham);
+            DrawVertices(g);
         }
     }
 }
