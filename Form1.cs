@@ -24,7 +24,7 @@ namespace PolygonRedactor
 
         public Form1()
         {
-            InitializeComponent();
+            InitializeComponent();            
             this.DoubleBuffered = true;
             ControlButton.Text = (controlButtonState).ToString();
         }
@@ -95,6 +95,7 @@ namespace PolygonRedactor
 
                 }
             }
+            
             this.Invalidate();
         }
 
@@ -151,7 +152,7 @@ namespace PolygonRedactor
 
 
             }            
-            else if ((e.Button == MouseButtons.Left) )
+            else if ((e.Button == MouseButtons.Left))
             {
                 if (_vertexSelected == null)
                 {
@@ -164,6 +165,23 @@ namespace PolygonRedactor
                     _vertexSelected.isSelected = false;
                     _vertexSelected = null;
                 }
+            }
+            else if ((e.Button == MouseButtons.Right) && (_vertexSelected == null) &&
+                (_edgeSelected == null))
+            {
+                foreach (Edge edge in _polygon.edges)
+                {
+                    if (edge.IsOnEdge(e.Location))
+                    {
+                        edge.isSelected = true;
+                        _edgeSelected = edge;
+                        this.Invalidate();
+                        ContextMenuStrip contextMenu = new ContextMenuStrip();
+                        contextMenu.Items.Add("Add new point", null, Option1_AddPoint);
+                        contextMenu.Show(this, e.Location);
+                        break;
+                    }
+                }                
             }
             this.Invalidate();
         }
@@ -195,6 +213,14 @@ namespace PolygonRedactor
 
         }
 
+
+        private void Option1_AddPoint(object sender, EventArgs e)
+        {
+            _polygon.AddNewVertex(_edgeSelected);
+            //_edgeSelected.isSelected = false;
+            _edgeSelected = null;
+            this.Invalidate();
+        }
 
     }
 }

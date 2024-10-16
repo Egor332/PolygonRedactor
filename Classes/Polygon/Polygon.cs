@@ -79,5 +79,30 @@ namespace PolygonRedactor.Classes.Polygon
             DrawEdges(bresenham);
             DrawVertices(g);
         }
+
+        public void AddNewVertex(Edge selectedEdge)
+        {
+            int edgeNumber = 0;
+            foreach (Edge e in edges)
+            {
+                if (e == selectedEdge)
+                {
+                    break;
+                }
+                edgeNumber++;
+            }
+            int x = (selectedEdge.start.position.X + selectedEdge.end.position.X) / 2;
+            int y = (selectedEdge.start.position.Y + selectedEdge.end.position.Y) / 2;
+
+            Vertex newVertex = new Vertex(new Point(x, y));
+
+            vertices.Insert(edgeNumber + 1, newVertex);
+
+            Edge newEdge = new Edge(newVertex, selectedEdge.end);
+            
+            edges.Insert(edgeNumber, newEdge);
+            selectedEdge.end = newVertex;
+            
+        }
     }
 }

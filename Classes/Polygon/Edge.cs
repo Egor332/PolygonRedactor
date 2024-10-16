@@ -13,7 +13,7 @@ namespace PolygonRedactor.Classes.Polygon
 
         public Point? pressPoint = null;
 
-        public bool isSelected;
+        public bool isSelected = false;
 
         private double error = 8.0;
 
