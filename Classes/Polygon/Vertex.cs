@@ -26,5 +26,14 @@ namespace PolygonRedactor.Classes.Polygon
             }
             return false;
         }
+
+        public void MovePoint(Point p, Point start)
+        {
+            int dx = p.X - start.X;
+            int dy = p.Y - start.Y;
+
+            position.X += dx;
+            position.Y += dy;
+        }
     }
 }

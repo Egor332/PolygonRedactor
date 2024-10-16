@@ -17,6 +17,7 @@ namespace PolygonRedactor
         private Edge? _edgeSelected = null;
 
         private Polygon _polygon = new Polygon();
+        private bool _isPolygonSelected = false;
 
         protected ControlButtonStates controlButtonState = ControlButtonStates.Draw;
 
@@ -123,7 +124,7 @@ namespace PolygonRedactor
         private void Modify_MouseDown(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Left) && (_vertexSelected == null) &&
-                (_edgeSelected == null))
+                (_edgeSelected == null) && (!_isPolygonSelected))
             {
                 foreach (Vertex v in _polygon.vertices)
                 {
@@ -150,20 +151,33 @@ namespace PolygonRedactor
 
                 }
 
+                if ((_vertexSelected == null) && (_edgeSelected == null))
+                {
+                    _polygon.isSelected = true;
+                    _polygon.pressPoint = e.Location;
+                    _isPolygonSelected = true;
+                }
+
 
             }            
             else if ((e.Button == MouseButtons.Left))
             {
-                if (_vertexSelected == null)
+                if ((_vertexSelected == null) && (!_isPolygonSelected))
                 {
                     _edgeSelected.isSelected = false;
                     _edgeSelected.pressPoint = null;
                     _edgeSelected = null;
                 }
-                else 
+                else if ((_edgeSelected == null) && (!_isPolygonSelected))
                 {
                     _vertexSelected.isSelected = false;
                     _vertexSelected = null;
+                }
+                else
+                {
+                    _polygon.isSelected = false;
+                    _polygon.pressPoint = null;
+                    _isPolygonSelected = false;
                 }
             }
             else if ((e.Button == MouseButtons.Right) && (_vertexSelected == null) &&
@@ -199,6 +213,12 @@ namespace PolygonRedactor
                 _edgeSelected.pressPoint = e.Location;
                 this.Invalidate();
             }
+            if (_isPolygonSelected)
+            {
+                _polygon.MovePolygon(e.Location, this.Width, this.Height);
+                _polygon.pressPoint = e.Location;
+                this.Invalidate();
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -217,7 +237,7 @@ namespace PolygonRedactor
         private void Option1_AddPoint(object sender, EventArgs e)
         {
             _polygon.AddNewVertex(_edgeSelected);
-            //_edgeSelected.isSelected = false;
+            _edgeSelected.isSelected = false;
             _edgeSelected = null;
             this.Invalidate();
         }

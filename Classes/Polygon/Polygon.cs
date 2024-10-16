@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +12,9 @@ namespace PolygonRedactor.Classes.Polygon
         public List<Vertex> vertices = new List<Vertex>();
         public List<Edge> edges = new List<Edge>();
 
+        public bool isSelected = false;
+        public Point? pressPoint = null;
+
         public void AddNewVertex(Point point)
         {
             vertices.Add(new Vertex(point));
@@ -18,7 +22,7 @@ namespace PolygonRedactor.Classes.Polygon
 
         public void AddNewEdge()
         {
-            edges.Add(new Edge(vertices[vertices.Count - 1], vertices[vertices.Count - 2]));
+            edges.Add(new Edge(vertices[vertices.Count - 2], vertices[vertices.Count - 1]));
         }
 
         private void DrawEdges(Bresenham bresenham)
@@ -74,7 +78,14 @@ namespace PolygonRedactor.Classes.Polygon
                     points[i] = v.position;
                     i++;
                 }
-                g.FillPolygon(Brushes.LightGray, points);
+                if (isSelected)
+                {
+                    g.FillPolygon(Brushes.LightCoral, points);
+                }
+                else 
+                {
+                    g.FillPolygon(Brushes.LightGray, points);
+                }
             }
             DrawEdges(bresenham);
             DrawVertices(g);
@@ -100,9 +111,17 @@ namespace PolygonRedactor.Classes.Polygon
 
             Edge newEdge = new Edge(newVertex, selectedEdge.end);
             
-            edges.Insert(edgeNumber, newEdge);
+            edges.Insert(edgeNumber + 1, newEdge);
             selectedEdge.end = newVertex;
             
+        }
+
+        public void MovePolygon(Point p, int width, int height)
+        {
+            foreach (Vertex v in vertices)
+            {
+                v.MovePoint(p, pressPoint.Value);
+            }
         }
     }
 }
