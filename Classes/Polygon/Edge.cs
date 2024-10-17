@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolygonRedactor.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace PolygonRedactor.Classes.Polygon
     {
         public Vertex start;
         public Vertex end;
+        public EdgeStates state = EdgeStates.None;
 
         public Point? pressPoint = null;
 

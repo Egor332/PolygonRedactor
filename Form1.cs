@@ -11,6 +11,7 @@ namespace PolygonRedactor
         private bool _isDrawing = false;
         private Point _startPoint;
         private Point _currentPoint;
+        private ContextMenuStrip _contextMenu = new ContextMenuStrip();
 
         // private bool _vertexSelected = false;
         private Vertex? _vertexSelected = null;
@@ -27,6 +28,10 @@ namespace PolygonRedactor
         {
             InitializeComponent();            
             this.DoubleBuffered = true;
+            _contextMenu.Items.Add("Add new point", null, Option1_AddPoint);
+            _contextMenu.Items.Add("Set vertical", null, Option2_SetVertical);
+            _contextMenu.Items.Add("Set horizontal", null, Option3_SetHorizontal);
+            _contextMenu.Items.Add("Set fixed", null, Option4_SetFixed);
             ControlButton.Text = (controlButtonState).ToString();
         }
 
@@ -153,9 +158,12 @@ namespace PolygonRedactor
 
                 if ((_vertexSelected == null) && (_edgeSelected == null))
                 {
-                    _polygon.isSelected = true;
-                    _polygon.pressPoint = e.Location;
-                    _isPolygonSelected = true;
+                    if (_polygon.CheckIsInside(e.Location))
+                    {
+                        _polygon.isSelected = true;
+                        _polygon.pressPoint = e.Location;
+                        _isPolygonSelected = true;
+                    }
                 }
 
 
@@ -189,10 +197,8 @@ namespace PolygonRedactor
                     {
                         edge.isSelected = true;
                         _edgeSelected = edge;
-                        this.Invalidate();
-                        ContextMenuStrip contextMenu = new ContextMenuStrip();
-                        contextMenu.Items.Add("Add new point", null, Option1_AddPoint);
-                        contextMenu.Show(this, e.Location);
+                        this.Invalidate();                                       
+                        _contextMenu.Show(this, e.Location);
                         break;
                     }
                 }                
@@ -237,6 +243,38 @@ namespace PolygonRedactor
         private void Option1_AddPoint(object sender, EventArgs e)
         {
             _polygon.AddNewVertex(_edgeSelected);
+            _edgeSelected.isSelected = false;
+            _edgeSelected = null;
+            this.Invalidate();
+        }
+
+        public void Option2_SetVertical(object sender, EventArgs e)
+        {
+            _edgeSelected.state = EdgeStates.Vertical;
+            _edgeSelected.isSelected = false;
+            _edgeSelected = null;
+            this.Invalidate();
+        }
+
+        public void Option3_SetHorizontal(object sender, EventArgs e)
+        {
+            _edgeSelected.state = EdgeStates.Horizontal;
+            _edgeSelected.isSelected = false;
+            _edgeSelected = null;
+            this.Invalidate();
+        }
+
+        public void Option4_SetFixed(object sender, EventArgs e)
+        {
+            _edgeSelected.state = EdgeStates.Fixed;
+            _edgeSelected.isSelected = false;
+            _edgeSelected = null;
+            this.Invalidate();
+        }
+
+        public void Option5_SetBroken(object sender, EventArgs e)
+        {
+            _edgeSelected.state = EdgeStates.Broken;
             _edgeSelected.isSelected = false;
             _edgeSelected = null;
             this.Invalidate();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -114,6 +115,21 @@ namespace PolygonRedactor.Classes.Polygon
             edges.Insert(edgeNumber + 1, newEdge);
             selectedEdge.end = newVertex;
             
+        }
+
+        public bool CheckIsInside(Point point)
+        {
+            Point[] polygonPoints = new Point[vertices.Count];
+            int i = 0;
+            foreach (Vertex vertex in vertices)
+            {
+                polygonPoints[i] = vertex.position;
+                i++;
+            }
+            GraphicsPath path = new GraphicsPath();
+            path.AddPolygon(polygonPoints);
+            if (path.IsVisible(point)) return true;
+            return false;
         }
 
         public void MovePolygon(Point p, int width, int height)
