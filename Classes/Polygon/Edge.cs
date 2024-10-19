@@ -50,19 +50,22 @@ namespace PolygonRedactor.Classes.Polygon
             int dx = p.X - pressPoint.Value.X;
             int dy = p.Y - pressPoint.Value.Y;
 
-            if (ValidatePositionOnAxis(start.position.X + dx, end.position.X + dx, width - 20)) 
-            {
-                start.position.X += dx;
-                end.position.X += dx;
-            }
+            //if (ValidatePositionOnAxis(start.position.X + dx, end.position.X + dx, width - 20)) 
+            //{
+            //    start.position.X += dx;
+            //    end.position.X += dx;
+            //}
 
 
 
-            if (ValidatePositionOnAxis(start.position.Y + dy, end.position.Y + dy, height - 35))
-            {
-                start.position.Y += dy;
-                end.position.Y += dy;
-            }
+            //if (ValidatePositionOnAxis(start.position.Y + dy, end.position.Y + dy, height - 35))
+            //{
+            //    start.position.Y += dy;
+            //    end.position.Y += dy;
+            //}
+
+            start.MovePoint(p, pressPoint.Value);
+            end.MovePoint(p, pressPoint.Value);
         }
 
         private bool ValidatePositionOnAxis(int x1, int x2, int size)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolygonRedactor.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,9 @@ namespace PolygonRedactor.Classes.Polygon
         public Point position;
         public int radius = 3;
         public bool isSelected = false;
+
+        public EdgeStates leftConstraint = EdgeStates.None;
+        public EdgeStates rightConstraint = EdgeStates.None;
 
         public Vertex(Point position)
         {

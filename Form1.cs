@@ -210,7 +210,7 @@ namespace PolygonRedactor
         {
             if (_vertexSelected != null)
             {
-                _vertexSelected.position = e.Location;
+                _vertexSelected.MovePoint(e.Location, _vertexSelected.position);
                 this.Invalidate();
             }
             if (_edgeSelected != null)
