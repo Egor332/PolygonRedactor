@@ -36,6 +36,11 @@ namespace PolygonRedactor.Classes.Polygon
             int dx = p.X - start.X;
             int dy = p.Y - start.Y;
 
+            MovePointDelta(dx, dy);
+        }
+
+        public void MovePointDelta(int dx, int dy)
+        {
             position.X += dx;
             position.Y += dy;
         }

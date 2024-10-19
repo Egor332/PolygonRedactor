@@ -17,12 +17,46 @@ namespace PolygonRedactor.Classes.Polygon
 
         public bool isSelected = false;
 
-        private double error = 8.0;
+        private double error = 4.0;
 
         public Edge(Vertex start, Vertex end)
         {
             this.start = start;
             this.end = end;
+        }
+
+        public void ChangeState(EdgeStates state)
+        {
+            this.state = state;
+            start.rightConstraint = state;
+            end.rightConstraint = state;
+            switch (state)
+            {
+                case EdgeStates.Vertical:
+                    SetVertical();
+                    break;
+                case EdgeStates.Horizontal:
+                    SetHorizontal();
+                    break;
+                case EdgeStates.Fixed:
+                    break;
+                case EdgeStates.Broken:
+                    break;
+            }
+        }
+
+        private void SetVertical()
+        {
+            int dx = start.position.X - end.position.X;
+            start.MovePointDelta(0 - (dx/2), 0);
+            end.MovePointDelta((dx / 2) + (dx % 2), 0);
+        }
+
+        private void SetHorizontal()
+        {
+            int dy = start.position.Y - end.position.Y;
+            start.MovePointDelta(0, 0 - (dy / 2));
+            end.MovePointDelta(0, (dy / 2) + (dy % 2));
         }
 
         public bool IsOnEdge(Point point)
@@ -47,8 +81,8 @@ namespace PolygonRedactor.Classes.Polygon
 
         public void MoveEdge(Point p, int width, int height)
         {            
-            int dx = p.X - pressPoint.Value.X;
-            int dy = p.Y - pressPoint.Value.Y;
+            //int dx = p.X - pressPoint.Value.X;
+            //int dy = p.Y - pressPoint.Value.Y;
 
             //if (ValidatePositionOnAxis(start.position.X + dx, end.position.X + dx, width - 20)) 
             //{

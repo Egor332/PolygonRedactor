@@ -2,6 +2,8 @@ using PolygonRedactor.Classes;
 using PolygonRedactor.Classes.Polygon;
 using PolygonRedactor.Enums;
 using System.ComponentModel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using System.Windows.Forms;
 
 namespace PolygonRedactor
 {
@@ -236,7 +238,6 @@ namespace PolygonRedactor
             {
                 _bresenham.Draw(_startPoint, _currentPoint);
             }
-
         }
 
 
@@ -250,7 +251,18 @@ namespace PolygonRedactor
 
         public void Option2_SetVertical(object sender, EventArgs e)
         {
-            _edgeSelected.state = EdgeStates.Vertical;
+            
+            if (IsAvaliableConstraint(EdgeStates.Vertical))
+            {
+                _edgeSelected.ChangeState(EdgeStates.Vertical);
+            }
+            else 
+            {
+                MessageBox.Show("Invalidate operation", "Warning",
+                                 MessageBoxButtons.OK,
+                                 MessageBoxIcon.Information);
+                
+            }
             _edgeSelected.isSelected = false;
             _edgeSelected = null;
             this.Invalidate();
@@ -258,15 +270,49 @@ namespace PolygonRedactor
 
         public void Option3_SetHorizontal(object sender, EventArgs e)
         {
-            _edgeSelected.state = EdgeStates.Horizontal;
+            if (IsAvaliableConstraint(EdgeStates.Horizontal))
+            {
+                _edgeSelected.ChangeState(EdgeStates.Horizontal);
+            }
+            else
+            {
+                MessageBox.Show("Invalidate operation", "Warning",
+                                 MessageBoxButtons.OK,
+                                 MessageBoxIcon.Information);
+
+            }
             _edgeSelected.isSelected = false;
             _edgeSelected = null;
             this.Invalidate();
         }
 
+        public bool IsAvaliableConstraint(EdgeStates toSet) 
+        {
+            int i = 0;
+            int prev = _polygon.edges.Count - 1;
+            
+            foreach (Edge e in _polygon.edges)
+            {
+                if (e == _edgeSelected) break;
+                prev = i;
+                i++;
+            }
+            int next = i + 1;
+            if (i == _polygon.edges.Count - 1)
+            {
+                next = 0;
+            }
+            if ((_polygon.edges[prev].state == toSet) || (_polygon.edges[next].state == toSet))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public void Option4_SetFixed(object sender, EventArgs e)
         {
-            _edgeSelected.state = EdgeStates.Fixed;
+            _edgeSelected.ChangeState(EdgeStates.Fixed);
             _edgeSelected.isSelected = false;
             _edgeSelected = null;
             this.Invalidate();
@@ -274,7 +320,7 @@ namespace PolygonRedactor
 
         public void Option5_SetBroken(object sender, EventArgs e)
         {
-            _edgeSelected.state = EdgeStates.Broken;
+            _edgeSelected.ChangeState(EdgeStates.Broken);
             _edgeSelected.isSelected = false;
             _edgeSelected = null;
             this.Invalidate();
