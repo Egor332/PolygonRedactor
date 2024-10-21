@@ -42,11 +42,11 @@ namespace PolygonRedactor.Classes.Polygon
             MovePointDelta(dx, dy);
         }
 
-        public bool MovePointDelta(int dx, int dy)
+        public void MovePointDelta(int dx, int dy)
         {
             if (used)
             {
-                return false;
+                return;
             }
             used = true;
             if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
@@ -68,8 +68,14 @@ namespace PolygonRedactor.Classes.Polygon
 
             position.X += dx;
             position.Y += dy;
-            return true;
         }
 
+        public void MovePointEnforce(Point p, Point start)
+        {
+            int dx = p.X - start.X;
+            int dy = p.Y - start.Y;
+            position.X += dx;
+            position.Y += dy;
+        }
     }
 }

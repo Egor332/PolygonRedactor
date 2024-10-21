@@ -137,7 +137,7 @@ namespace PolygonRedactor.Classes.Polygon
         {
             foreach (Vertex v in vertices)
             {
-                v.MovePoint(p, pressPoint.Value);
+                v.MovePointEnforce(p, pressPoint.Value);
             }
         }
 
