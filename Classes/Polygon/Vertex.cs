@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -64,10 +65,32 @@ namespace PolygonRedactor.Classes.Polygon
             if ((rightConstraint == EdgeStates.Vertical) && (dx != 0))
             {
                 rightEdge.end.MovePointDelta(dx, 0);
-            }
+            }            
 
             position.X += dx;
             position.Y += dy;
+
+            if (leftConstraint == EdgeStates.Fixed)
+            {
+                DoFixedEdge(leftEdge.start, leftEdge.length.Value);
+            }
+
+            if (rightConstraint == EdgeStates.Fixed)
+            {
+                DoFixedEdge(rightEdge.end, rightEdge.length.Value);
+            }
+        }
+
+        private void DoFixedEdge(Vertex v, int length)
+        {
+            int currentLength = Edge.Distance(position, v.position);
+            int dx = v.position.X - position.X;
+            int dy = v.position.Y - position.Y;
+            double cos = (double)dx / (double)currentLength;
+            double sin = (double)dy / (double)currentLength;
+            int xChange = Convert.ToInt32(Math.Round(cos * (length - currentLength)));
+            int yChange = Convert.ToInt32(Math.Round(sin * (length - currentLength)));
+            v.MovePointDelta(xChange, yChange);
         }
 
         public void MovePointEnforce(Point p, Point start)

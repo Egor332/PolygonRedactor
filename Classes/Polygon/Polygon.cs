@@ -95,7 +95,10 @@ namespace PolygonRedactor.Classes.Polygon
 
         public void AddNewVertex(Edge selectedEdge)
         {
-            int edgeNumber = 0;
+            selectedEdge.state = Enums.EdgeStates.None;
+            selectedEdge.start.rightConstraint = Enums.EdgeStates.None;
+            selectedEdge.end.leftConstraint = Enums.EdgeStates.None;
+            int edgeNumber = 0;            
             foreach (Edge e in edges)
             {
                 if (e == selectedEdge)

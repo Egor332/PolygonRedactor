@@ -12,6 +12,7 @@ namespace PolygonRedactor.Classes.Polygon
         public Vertex start;
         public Vertex end;
         public EdgeStates state = EdgeStates.None;
+        public int? length = null;
 
         public Point? pressPoint = null;
 
@@ -27,7 +28,9 @@ namespace PolygonRedactor.Classes.Polygon
 
         public void ChangeState(EdgeStates state)
         {
-            
+            this.state = EdgeStates.None;
+            start.rightConstraint = EdgeStates.None;
+            end.leftConstraint = EdgeStates.None;
             switch (state)
             {
                 case EdgeStates.Vertical:
@@ -37,6 +40,7 @@ namespace PolygonRedactor.Classes.Polygon
                     SetHorizontal();
                     break;
                 case EdgeStates.Fixed:
+                    if (!SetFixed()) return;
                     break;
                 case EdgeStates.Broken:
                     break;
@@ -63,6 +67,33 @@ namespace PolygonRedactor.Classes.Polygon
             end.MovePointDelta(0, (dy / 2) + (dy % 2));
         }
 
+        private bool SetFixed()
+        {
+            string lenToForm = (Distance(start.position, end.position)).ToString();
+            SetLengthForm setLengthForm = new SetLengthForm(lenToForm);
+            string? buf = setLengthForm.Show();
+            if (buf != null) 
+            {                
+                ChangeLength(Int32.Parse(buf));
+                length = Distance(start.position, end.position);
+                return true;
+            }
+            return false;
+        }
+
+        private void ChangeLength(int toSet)
+        {
+            int currentLength = Distance(start.position, end.position);
+            int dx = end.position.X - start.position.X;
+            int dy = end.position.Y - start.position.Y;
+            double cos = (double)dx / (double)currentLength;
+            double sin = (double)dy / (double)currentLength;
+            int xChange = Convert.ToInt32(Math.Round(cos * (toSet - currentLength)));
+            int yChange = Convert.ToInt32(Math.Round(sin * (toSet - currentLength)));
+            start.MovePointDelta(0 - xChange/2, 0 - yChange/2);
+            end.MovePointDelta((xChange / 2) + (xChange % 2), (yChange / 2) + (yChange % 2));
+        }
+
         public bool IsOnEdge(Point point)
         {
             if ((Distance(start.position, point) + Distance(end.position, point) < Distance(start.position, end.position) + error) &&
@@ -78,9 +109,9 @@ namespace PolygonRedactor.Classes.Polygon
             return false;
         }
 
-        public double Distance(Point p1, Point p2)
+        public static int Distance(Point p1, Point p2)
         {
-            return Math.Sqrt(Math.Pow((p1.X - p2.X), 2) + Math.Pow((p1.Y - p2.Y), 2));
+            return Convert.ToInt32(Math.Floor(Math.Sqrt(Math.Pow((p1.X - p2.X), 2) + Math.Pow((p1.Y - p2.Y), 2))));
         }
 
         public void MoveEdge(Point p, int width, int height)
