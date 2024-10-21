@@ -12,6 +12,7 @@ namespace PolygonRedactor.Classes.Polygon
         public Point position;
         public int radius = 3;
         public bool isSelected = false;
+        public bool used = false;
 
         public EdgeStates leftConstraint = EdgeStates.None;
         public Edge? leftEdge = null;
@@ -41,20 +42,34 @@ namespace PolygonRedactor.Classes.Polygon
             MovePointDelta(dx, dy);
         }
 
-        public void MovePointDelta(int dx, int dy)
+        public bool MovePointDelta(int dx, int dy)
         {
-            if (dx != 0)
+            if (used)
             {
-                
+                return false;
             }
-
-            if (dy != 0)
+            used = true;
+            if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
             {
-                
+                leftEdge.start.MovePointDelta(0, dy);
+            }
+            if ((leftConstraint == EdgeStates.Vertical) && (dx != 0))
+            {
+                leftEdge.start.MovePointDelta(dx, 0);
+            }
+            if ((rightConstraint == EdgeStates.Horizontal) && (dy != 0))
+            {
+                rightEdge.end.MovePointDelta(0, dy);
+            }
+            if ((rightConstraint == EdgeStates.Vertical) && (dx != 0))
+            {
+                rightEdge.end.MovePointDelta(dx, 0);
             }
 
             position.X += dx;
             position.Y += dy;
+            return true;
         }
+
     }
 }

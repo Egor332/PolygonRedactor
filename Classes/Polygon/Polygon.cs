@@ -90,6 +90,7 @@ namespace PolygonRedactor.Classes.Polygon
             }
             DrawEdges(bresenham);
             DrawVertices(g);
+            SetAllUnused();
         }
 
         public void AddNewVertex(Edge selectedEdge)
@@ -138,6 +139,14 @@ namespace PolygonRedactor.Classes.Polygon
             {
                 v.MovePoint(p, pressPoint.Value);
             }
+        }
+
+        public void SetAllUnused()
+        {
+            foreach (Vertex v in vertices)
+            {
+                v.used = false;
+            } 
         }
     }
 }

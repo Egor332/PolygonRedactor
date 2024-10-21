@@ -27,11 +27,7 @@ namespace PolygonRedactor.Classes.Polygon
 
         public void ChangeState(EdgeStates state)
         {
-            this.state = state;
-            start.rightConstraint = state;
-            start.rightEdge = this;
-            end.leftConstraint = state;
-            end.leftEdge = this;
+            
             switch (state)
             {
                 case EdgeStates.Vertical:
@@ -45,6 +41,12 @@ namespace PolygonRedactor.Classes.Polygon
                 case EdgeStates.Broken:
                     break;
             }
+
+            this.state = state;
+            start.rightConstraint = state;
+            start.rightEdge = this;
+            end.leftConstraint = state;
+            end.leftEdge = this;
         }
 
         private void SetVertical()
@@ -82,7 +84,7 @@ namespace PolygonRedactor.Classes.Polygon
         }
 
         public void MoveEdge(Point p, int width, int height)
-        {            
+        {
             //int dx = p.X - pressPoint.Value.X;
             //int dy = p.Y - pressPoint.Value.Y;
 
@@ -100,8 +102,19 @@ namespace PolygonRedactor.Classes.Polygon
             //    end.position.Y += dy;
             //}
 
-            start.MovePoint(p, pressPoint.Value);
+            // moving edge will keep it constrains
+            EdgeStates stateBuffer = state;
+            start.rightConstraint = EdgeStates.None;
+            end.leftConstraint = EdgeStates.None;
+            state = EdgeStates.None;
+
+            start.MovePoint(p, pressPoint.Value);            
             end.MovePoint(p, pressPoint.Value);
+
+            state = stateBuffer;
+            start.rightConstraint = stateBuffer;
+            end.leftConstraint = stateBuffer;
+
         }
 
         private bool ValidatePositionOnAxis(int x1, int x2, int size)
