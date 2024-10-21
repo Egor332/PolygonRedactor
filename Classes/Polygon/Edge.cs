@@ -29,7 +29,9 @@ namespace PolygonRedactor.Classes.Polygon
         {
             this.state = state;
             start.rightConstraint = state;
-            end.rightConstraint = state;
+            start.rightEdge = this;
+            end.leftConstraint = state;
+            end.leftEdge = this;
             switch (state)
             {
                 case EdgeStates.Vertical:

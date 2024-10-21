@@ -14,7 +14,9 @@ namespace PolygonRedactor.Classes.Polygon
         public bool isSelected = false;
 
         public EdgeStates leftConstraint = EdgeStates.None;
+        public Edge? leftEdge = null;
         public EdgeStates rightConstraint = EdgeStates.None;
+        public Edge? rightEdge = null;
 
         public Vertex(Point position)
         {
@@ -41,6 +43,16 @@ namespace PolygonRedactor.Classes.Polygon
 
         public void MovePointDelta(int dx, int dy)
         {
+            if (dx != 0)
+            {
+                
+            }
+
+            if (dy != 0)
+            {
+                
+            }
+
             position.X += dx;
             position.Y += dy;
         }
