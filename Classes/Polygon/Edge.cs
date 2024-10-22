@@ -134,17 +134,17 @@ namespace PolygonRedactor.Classes.Polygon
             //}
 
             // moving edge will keep it constrains
-            EdgeStates stateBuffer = state;
-            start.rightConstraint = EdgeStates.None;
-            end.leftConstraint = EdgeStates.None;
-            state = EdgeStates.None;
+            //EdgeStates stateBuffer = state;
+            //start.rightConstraint = EdgeStates.None;
+            //end.leftConstraint = EdgeStates.None;
+            //state = EdgeStates.None;
 
             start.MovePoint(p, pressPoint.Value);            
             end.MovePoint(p, pressPoint.Value);
 
-            state = stateBuffer;
-            start.rightConstraint = stateBuffer;
-            end.leftConstraint = stateBuffer;
+            //state = stateBuffer;
+            //start.rightConstraint = stateBuffer;
+            //end.leftConstraint = stateBuffer;
 
         }
 

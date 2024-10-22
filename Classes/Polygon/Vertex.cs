@@ -52,35 +52,107 @@ namespace PolygonRedactor.Classes.Polygon
             used = true;
             position.X += dx;
             position.Y += dy;
-            if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
+            if (leftEdge != null)
             {
-                leftEdge.start.MovePointDelta(0, dy);
+                if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
+                {
+                    leftEdge.start.MovePointDelta(0, position.Y - leftEdge.start.position.Y);
+                }
+                if ((leftConstraint == EdgeStates.Vertical) && (dx != 0))
+                {
+                    leftEdge.start.MovePointDelta(position.X - leftEdge.start.position.X, 0);
+                }
+                if (leftConstraint == EdgeStates.Fixed)
+                {
+                    (int xChange, int yChange) = DoFixedEdge(leftEdge.start, leftEdge.length.Value);
+                    leftEdge.start.DoLeftCycle(xChange, yChange);
+                }
             }
-            if ((leftConstraint == EdgeStates.Vertical) && (dx != 0))
+            if (rightEdge != null)
             {
-                leftEdge.start.MovePointDelta(dx, 0);
+                if ((rightConstraint == EdgeStates.Horizontal) && (dy != 0))
+                {
+                    rightEdge.end.MovePointDelta(0, position.Y - rightEdge.end.position.Y);
+                }
+                if ((rightConstraint == EdgeStates.Vertical) && (dx != 0))
+                {
+                    rightEdge.end.MovePointDelta(position.X - rightEdge.end.position.X, 0);
+                }
+                if ((rightConstraint == EdgeStates.Fixed))
+                {
+                    (int xChange, int yChange) = DoFixedEdge(rightEdge.end, rightEdge.length.Value);
+                    rightEdge.end.DoRightCycle(xChange, yChange);
+                }
             }
-            if (leftConstraint == EdgeStates.Fixed)
-            {
-                DoFixedEdge(leftEdge.start, leftEdge.length.Value);
-            }
-            if ((rightConstraint == EdgeStates.Horizontal) && (dy != 0))
-            {
-                rightEdge.end.MovePointDelta(0, dy);
-            }
-            if ((rightConstraint == EdgeStates.Vertical) && (dx != 0))
-            {
-                rightEdge.end.MovePointDelta(dx, 0);
-            }
-            if ((rightConstraint == EdgeStates.Fixed))
-            {
-                DoFixedEdge(rightEdge.end, rightEdge.length.Value); 
-            }
+            //if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
+            //{
+            //    leftEdge.start.MovePointDelta(0, dy);
+            //}
+            //if ((leftConstraint == EdgeStates.Vertical) && (dx != 0))
+            //{
+            //    leftEdge.start.MovePointDelta(dx, 0);
+            //}
+            //if (leftConstraint == EdgeStates.Fixed)
+            //{
+            //    DoFixedEdge(leftEdge.start, leftEdge.length.Value);
+            //}
+            //if ((rightConstraint == EdgeStates.Horizontal) && (dy != 0))
+            //{
+            //    rightEdge.end.MovePointDelta(0, dy);
+            //}
+            //if ((rightConstraint == EdgeStates.Vertical) && (dx != 0))
+            //{
+            //    rightEdge.end.MovePointDelta(dx, 0);
+            //}
+            //if ((rightConstraint == EdgeStates.Fixed))
+            //{
+            //    DoFixedEdge(rightEdge.end, rightEdge.length.Value); 
+            //}
 
             
         }
 
-        private void DoFixedEdge(Vertex v, int length)
+        private void DoLeftCycle(int dx, int dy)
+        {
+            if (used) return;
+            position.X += dx;
+            position.Y += dy;
+            if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
+            {
+                leftEdge.start.MovePointDelta(0, position.Y - leftEdge.start.position.Y);
+            }
+            if ((leftConstraint == EdgeStates.Vertical) && (dx != 0))
+            {
+                leftEdge.start.MovePointDelta(position.X - leftEdge.start.position.X, 0);
+            }
+            if (leftConstraint == EdgeStates.Fixed)
+            {
+                (int xChange, int yChange) = DoFixedEdge(leftEdge.start, leftEdge.length.Value);
+                leftEdge.start.DoLeftCycle(xChange, yChange);
+            }
+        }
+
+        private void DoRightCycle(int dx, int dy)
+        {
+            if (used) return;
+            position.X += dx;
+            position.Y += dy;
+            if ((rightConstraint == EdgeStates.Horizontal) && (dy != 0))
+            {
+                rightEdge.end.MovePointDelta(0, position.Y - rightEdge.end.position.Y);
+            }
+            if ((rightConstraint == EdgeStates.Vertical) && (dx != 0))
+            {
+                rightEdge.end.MovePointDelta(position.X - rightEdge.end.position.X, 0);
+            }
+            if ((rightConstraint == EdgeStates.Fixed))
+            {
+                (int xChange, int yChange) = DoFixedEdge(rightEdge.end, rightEdge.length.Value);
+                rightEdge.end.DoRightCycle(xChange, yChange);
+            }
+        }
+
+        private (int dx, int dy) DoFixedEdge(Vertex v, int length)
         {
             int currentLength = Edge.Distance(position, v.position);
             int dx = v.position.X - position.X;
@@ -89,7 +161,7 @@ namespace PolygonRedactor.Classes.Polygon
             double sin = (double)dy / (double)currentLength;
             int xChange = Convert.ToInt32(Math.Round(cos * (length - currentLength)));
             int yChange = Convert.ToInt32(Math.Round(sin * (length - currentLength)));
-            v.MovePointDelta(xChange, yChange);
+            return (xChange, yChange);
         }
 
         public void MovePointEnforce(Point p, Point start)
