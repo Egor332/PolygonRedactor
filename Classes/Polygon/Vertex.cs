@@ -50,6 +50,8 @@ namespace PolygonRedactor.Classes.Polygon
                 return;
             }
             used = true;
+            position.X += dx;
+            position.Y += dy;
             if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
             {
                 leftEdge.start.MovePointDelta(0, dy);
@@ -58,6 +60,10 @@ namespace PolygonRedactor.Classes.Polygon
             {
                 leftEdge.start.MovePointDelta(dx, 0);
             }
+            if (leftConstraint == EdgeStates.Fixed)
+            {
+                DoFixedEdge(leftEdge.start, leftEdge.length.Value);
+            }
             if ((rightConstraint == EdgeStates.Horizontal) && (dy != 0))
             {
                 rightEdge.end.MovePointDelta(0, dy);
@@ -65,20 +71,13 @@ namespace PolygonRedactor.Classes.Polygon
             if ((rightConstraint == EdgeStates.Vertical) && (dx != 0))
             {
                 rightEdge.end.MovePointDelta(dx, 0);
-            }            
-
-            position.X += dx;
-            position.Y += dy;
-
-            if (leftConstraint == EdgeStates.Fixed)
+            }
+            if ((rightConstraint == EdgeStates.Fixed))
             {
-                DoFixedEdge(leftEdge.start, leftEdge.length.Value);
+                DoFixedEdge(rightEdge.end, rightEdge.length.Value); 
             }
 
-            if (rightConstraint == EdgeStates.Fixed)
-            {
-                DoFixedEdge(rightEdge.end, rightEdge.length.Value);
-            }
+            
         }
 
         private void DoFixedEdge(Vertex v, int length)

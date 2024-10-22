@@ -121,6 +121,18 @@ namespace PolygonRedactor.Classes.Polygon
             
         }
 
+        public void RemoveVertex(Vertex v)
+        {
+            if (v.leftEdge != null)
+            { 
+                v.leftEdge.start.rightConstraint = Enums.EdgeStates.None;
+            }
+            v.rightEdge.end.leftConstraint = Enums.EdgeStates.None;
+            v.leftEdge.end = v.rightEdge.end;
+            edges.Remove(v.rightEdge);
+            vertices.Remove(v);
+        }
+
         public bool CheckIsInside(Point point)
         {
             Point[] polygonPoints = new Point[vertices.Count];

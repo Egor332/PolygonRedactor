@@ -14,6 +14,7 @@ namespace PolygonRedactor
         private Point _startPoint;
         private Point _currentPoint;
         private ContextMenuStrip _contextMenu = new ContextMenuStrip();
+        private ContextMenuStrip _contextMenuVertex = new ContextMenuStrip();
 
         // private bool _vertexSelected = false;
         private Vertex? _vertexSelected = null;
@@ -34,6 +35,7 @@ namespace PolygonRedactor
             _contextMenu.Items.Add("Set vertical", null, Option2_SetVertical);
             _contextMenu.Items.Add("Set horizontal", null, Option3_SetHorizontal);
             _contextMenu.Items.Add("Set fixed", null, Option4_SetFixed);
+            _contextMenuVertex.Items.Add("Delete vertex", null, Option_DeleteVertex);
             ControlButton.Text = (controlButtonState).ToString();
         }
 
@@ -193,6 +195,18 @@ namespace PolygonRedactor
             else if ((e.Button == MouseButtons.Right) && (_vertexSelected == null) &&
                 (_edgeSelected == null))
             {
+                foreach (Vertex v in _polygon.vertices)
+                {
+                    if (v.CheckIsInArea(e.Location))
+                    {
+                        v.isSelected = true;
+                        _vertexSelected = v;
+                        this.Invalidate();
+                        _contextMenuVertex.Show(this, e.Location);
+                        break;
+                    }
+                }
+
                 foreach (Edge edge in _polygon.edges)
                 {
                     if (edge.IsOnEdge(e.Location))
@@ -238,6 +252,14 @@ namespace PolygonRedactor
             {
                 _bresenham.Draw(_startPoint, _currentPoint);
             }
+        }
+
+        private void Option_DeleteVertex(object sender, EventArgs e)
+        {
+            _polygon.RemoveVertex(_vertexSelected);
+            _vertexSelected.isSelected = false;
+            _vertexSelected = null;
+            this.Invalidate();
         }
 
 
