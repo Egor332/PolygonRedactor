@@ -71,7 +71,7 @@ namespace PolygonRedactor.Classes.Polygon
                 }
                 if (leftConstraint == EdgeStates.Bezier)
                 {
-                    leftEdge.bezierControlPoints[1].MovePointDelta(dx, dy);
+                    leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(dx, dy);
                 }
             }
             if (rightEdge != null)
@@ -91,7 +91,7 @@ namespace PolygonRedactor.Classes.Polygon
                 }
                 if (rightConstraint == EdgeStates.Bezier)
                 {
-                    rightEdge.bezierControlPoints[0].MovePointDelta(dx, dy);
+                    rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(dx, dy);
                 }
             }
             //if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
@@ -142,7 +142,7 @@ namespace PolygonRedactor.Classes.Polygon
             }
             if (leftConstraint == EdgeStates.Bezier) 
             {
-                leftEdge.bezierControlPoints[1].MovePointDelta(dx, dy);
+                leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(dx, dy);
             }
         }
 
@@ -166,7 +166,7 @@ namespace PolygonRedactor.Classes.Polygon
             }
             if (rightConstraint == EdgeStates.Bezier)
             {
-                rightEdge.bezierControlPoints[0].MovePointDelta(dx, dy);
+                rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(dx, dy);
             }
         }
 
@@ -190,11 +190,11 @@ namespace PolygonRedactor.Classes.Polygon
             position.Y += dy;
             if (leftConstraint == EdgeStates.Bezier)
             {
-                leftEdge.bezierControlPoints[1].MovePointDelta(dx, dy);
+                leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(dx, dy);
             }
             if (rightConstraint == EdgeStates.Bezier)
             {
-                rightEdge.bezierControlPoints[0].MovePointDelta(dx, dy);
+                rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(dx, dy);
             }
         }
 

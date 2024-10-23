@@ -154,10 +154,12 @@ namespace PolygonRedactor.Classes.Polygon
             if (v.leftEdge != null)
             { 
                 v.leftEdge.start.rightConstraint = Enums.EdgeStates.None;
+                v.leftEdge.state = Enums.EdgeStates.None;
             }
             if (v.rightEdge != null)
             {
                 v.rightEdge.end.leftConstraint = Enums.EdgeStates.None;
+                v.rightEdge.state = Enums.EdgeStates.None;
             }
             int i = 0;
             foreach (Vertex vert in vertices)

@@ -80,16 +80,84 @@ namespace PolygonRedactor.Classes
             return (p.X + dx, p.Y + dy);
         }
 
-        public void MovePoint(Point p)
+        public void MovePoint(Point p, Vertex v)
         {
             int dx = p.X - position.X;
             int dy = p.Y - position.Y;
 
-            MovePointDelta(dx, dy);
+            MovePointDelta(dx, dy, v);
 
         } 
 
-        public void MovePointDelta(int dx, int dy)
+        public void MovePointDelta(int dx, int dy, Vertex v)
+        {
+            position.X += dx;
+            position.Y += dy;
+            if (v.bezierState == BezierStates.G0) return;
+
+            // Only constraints left
+            if (v.leftEdge.bezierControlPoints[1] == this) DoMoveRight(dx, dy, v);
+            else DoMoveLeft(dx, dy, v);
+
+        }
+
+        private void DoMoveLeft(int dx, int dy, Vertex v)
+        {
+            if (v.leftEdge.state == EdgeStates.Bezier)
+            {
+                if (v.bezierState == BezierStates.G1) 
+                {
+                    KeepG1Bezier(v, v.leftEdge.bezierControlPoints[1]);
+                }
+                else
+                {
+                    v.leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(-dx, -dy);
+                }
+            }
+            else
+            {
+
+            }
+        }
+
+        private void DoMoveRight(int dx, int dy, Vertex v)
+        {
+            if (v.rightEdge.state == EdgeStates.Bezier)
+            {
+                if (v.bezierState == BezierStates.G1)
+                {
+                    KeepG1Bezier(v, v.rightEdge.bezierControlPoints[0]);
+                }
+                else
+                {
+                    v.rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(-dx, -dy);
+                }
+            }
+            else
+            {
+
+            }
+        }
+
+        private void KeepG1Bezier(Vertex v, BezierControlPoint p)
+        {
+            int lengthP =100; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            int dx = this.position.X - v.position.X;
+            int dy = this.position.Y - v.position.Y;
+            int lengthV = Edge.Distance(v.position, this.position);
+            int xChange = Convert.ToInt32(Math.Floor(((double)dx / (double)lengthV) * (lengthP)));
+            int yChange = Convert.ToInt32(Math.Floor(((double)dy / (double)lengthV) * (lengthP)));
+            p.MovePointEnforce(v.position.X - xChange, v.position.Y - yChange);
+
+        }
+
+        public void MovePointEnforce(int x, int y)
+        {
+            this.position.X = x;
+            this.position.Y = y;
+        }
+
+        public void MovePointDeltaEnforce(int dx, int dy)
         {
             position.X += dx;
             position.Y += dy;

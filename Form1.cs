@@ -20,6 +20,7 @@ namespace PolygonRedactor
         private Vertex? _vertexSelected = null;
         private Edge? _edgeSelected = null;
         private BezierControlPoint? _bezierSelected = null;
+        private Vertex? _asociatedVertex = null;
 
         private Polygon _polygon = new Polygon();
         private bool _isPolygonSelected = false;
@@ -92,6 +93,7 @@ namespace PolygonRedactor
             _edgeSelected = null;
             _isPolygonSelected = false;
             _bezierSelected = null;
+            _asociatedVertex = null;
             this.Invalidate();
         }
 
@@ -176,17 +178,21 @@ namespace PolygonRedactor
                     foreach (Edge edge in _polygon.edges)
                     {
                         if (edge.state != EdgeStates.Bezier) continue;
-                        for (int i = 0; i <= 1; i++)
+                        
+                        if (edge.bezierControlPoints[0].CheckIsInArea(e.Location))
                         {
-                            if (edge.bezierControlPoints[i].CheckIsInArea(e.Location))
-                            {
-                                _bezierSelected = edge.bezierControlPoints[i];
-                                _bezierSelected.isSelected = true;
-                                break;
-                            }
+                            _bezierSelected = edge.bezierControlPoints[0];
+                            _bezierSelected.isSelected = true;
+                            _asociatedVertex = edge.start;
+                            break;
                         }
-                        if (_bezierSelected != null) break;
-
+                        if (edge.bezierControlPoints[1].CheckIsInArea(e.Location))
+                        {
+                            _bezierSelected = edge.bezierControlPoints[1];
+                            _bezierSelected.isSelected = true;
+                            _asociatedVertex = edge.end;
+                            break;
+                        }
                     }
                 }
 
@@ -218,6 +224,7 @@ namespace PolygonRedactor
                 else if (_bezierSelected != null)
                 {
                     _bezierSelected.isSelected = false;
+                    _asociatedVertex = null;
                     _bezierSelected = null;
                 }
                 else
@@ -278,7 +285,7 @@ namespace PolygonRedactor
             }
             if (_bezierSelected != null)
             {
-                _bezierSelected.MovePoint(e.Location);
+                _bezierSelected.MovePoint(e.Location, _asociatedVertex);
                 this.Invalidate();
             }
         }
