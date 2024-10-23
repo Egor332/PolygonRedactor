@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PolygonRedactor.Classes.Polygon
 {
-    internal class Polygon
+    public class Polygon
     {
         public List<Vertex> vertices = new List<Vertex>();
         public List<Edge> edges = new List<Edge>();

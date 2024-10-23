@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PolygonRedactor.Classes.Polygon
 {
-    internal class Edge
+    public class Edge
     {
         public Vertex start;
         public Vertex end;
@@ -155,10 +155,36 @@ namespace PolygonRedactor.Classes.Polygon
 
         private void CreateBezier()
         {
-            // bezierControlPoints[0] = new BezierControlPoint(start.position);
-            bezierControlPoints[0] = new BezierControlPoint(start.position.X + 50, start.position.Y + 50);
-            bezierControlPoints[1] = new BezierControlPoint(end.position.X - 50, end.position.Y - 50);
-            // bezierControlPoints[3] = new BezierControlPoint(end.position);
+            if (start.bezierState == BezierStates.G0)
+            {
+                bezierControlPoints[0] = new BezierControlPoint(start.position.X + 50, start.position.Y + 50);
+            }
+            else
+            {
+                if (start.leftEdge.state == EdgeStates.Bezier)
+                {
+                    bezierControlPoints[0] = new BezierControlPoint(start, start.leftEdge.bezierControlPoints[1], start.bezierState);
+                }
+                else
+                {
+                    bezierControlPoints[0] = new BezierControlPoint(start, start.leftEdge.start, start.bezierState);
+                }
+            }
+            if (end.bezierState == BezierStates.G0)
+            {
+                bezierControlPoints[1] = new BezierControlPoint(end.position.X - 50, end.position.Y - 50);
+            }
+            else
+            {
+                if (end.rightEdge.state == EdgeStates.Bezier)
+                {
+                    bezierControlPoints[1] = new BezierControlPoint(end, end.rightEdge.bezierControlPoints[0], end.bezierState);
+                }
+                else
+                {
+                    bezierControlPoints[1] = new BezierControlPoint(end, end.rightEdge.end, end.bezierState);
+                }
+            }
         }
 
         public void DrawBezier(Graphics g, SolidBrush brush)

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PolygonRedactor.Classes.Polygon
 {
-    internal class Vertex
+    public class Vertex
     {
         public Point position;
         public int radius = 3;

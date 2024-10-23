@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PolygonRedactor.Classes
 {
-    internal class Bresenham
+    public class Bresenham
     {
         public System.Drawing.Graphics g;
         public System.Drawing.SolidBrush brush;

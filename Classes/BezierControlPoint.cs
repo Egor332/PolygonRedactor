@@ -1,8 +1,11 @@
-﻿using System;
+﻿using PolygonRedactor.Classes.Polygon;
+using PolygonRedactor.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace PolygonRedactor.Classes
 {
@@ -20,6 +23,44 @@ namespace PolygonRedactor.Classes
         public BezierControlPoint(int x, int y)
         {
             position = new Point(x, y);
+        }
+
+        public BezierControlPoint(Vertex v, BezierControlPoint c, BezierStates state) 
+        {
+            int x = 0, y = 0;
+            if (state == BezierStates.G1)
+            {
+                (x, y) = MakeForG1(v.position, c.position);
+            }
+            else
+            {
+
+            }
+            position = new Point(x, y);
+        }
+
+        public BezierControlPoint(Vertex v, Vertex c, BezierStates state)
+        {
+            int x = 0, y = 0;
+            if (state == BezierStates.G1)
+            {
+                (x, y) = MakeForG1(v.position, c.position);
+            }
+            else
+            {
+                
+            }
+            position = new Point(x, y);
+        }
+
+        private (int, int) MakeForG1(Point p, Point pp)
+        {
+            int dx = p.X - pp.X;
+            int dy = p.Y - pp.Y;
+            int length = Edge.Distance(p, pp);
+            int xChange = Convert.ToInt32(((double)dx / (double)length) * (100));
+            int yChange = Convert.ToInt32(((double)dy / (double)length) * (100));
+            return (p.X + xChange, p.Y + yChange);
         }
 
         public void MovePoint(Point p)
