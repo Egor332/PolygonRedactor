@@ -19,6 +19,7 @@ namespace PolygonRedactor
         // private bool _vertexSelected = false;
         private Vertex? _vertexSelected = null;
         private Edge? _edgeSelected = null;
+        private BezierControlPoint? _bezierSelected = null;
 
         private Polygon _polygon = new Polygon();
         private bool _isPolygonSelected = false;
@@ -29,14 +30,16 @@ namespace PolygonRedactor
 
         public Form1()
         {
-            InitializeComponent();            
+            InitializeComponent();
             this.DoubleBuffered = true;
             _contextMenu.Items.Add("Add new point", null, Option1_AddPoint);
             _contextMenu.Items.Add("Set vertical", null, Option2_SetVertical);
             _contextMenu.Items.Add("Set horizontal", null, Option3_SetHorizontal);
             _contextMenu.Items.Add("Set fixed", null, Option4_SetFixed);
+            _contextMenu.Items.Add("Bezier", null, Option5_Bezier);
             _contextMenuVertex.Items.Add("Delete vertex", null, Option_DeleteVertex);
             ControlButton.Text = (controlButtonState).ToString();
+            bresenhamRadioButton.Checked = true;
         }
 
         private void ControlButton_Click(object sender, EventArgs e)
@@ -105,7 +108,7 @@ namespace PolygonRedactor
 
                 }
             }
-            
+
             this.Invalidate();
         }
 
@@ -133,14 +136,14 @@ namespace PolygonRedactor
         private void Modify_MouseDown(object sender, MouseEventArgs e)
         {
             if ((e.Button == MouseButtons.Left) && (_vertexSelected == null) &&
-                (_edgeSelected == null) && (!_isPolygonSelected))
+                (_edgeSelected == null) && (!_isPolygonSelected) && (_bezierSelected == null))
             {
                 foreach (Vertex v in _polygon.vertices)
                 {
                     if (v.CheckIsInArea(e.Location))
                     {
                         v.isSelected = true;
-                        _vertexSelected = v;                        
+                        _vertexSelected = v;
                         break;
                     }
                 }
@@ -151,6 +154,7 @@ namespace PolygonRedactor
                     {
                         if (edge.IsOnEdge(e.Location))
                         {
+                            if (edge.state == EdgeStates.Bezier) continue;
                             edge.isSelected = true;
                             _edgeSelected = edge;
                             _edgeSelected.pressPoint = e.Location;
@@ -162,6 +166,25 @@ namespace PolygonRedactor
 
                 if ((_vertexSelected == null) && (_edgeSelected == null))
                 {
+                    foreach (Edge edge in _polygon.edges)
+                    {
+                        if (edge.state != EdgeStates.Bezier) continue;
+                        for (int i = 0; i <= 1; i++)
+                        {
+                            if (edge.bezierControlPoints[i].CheckIsInArea(e.Location))
+                            {
+                                _bezierSelected = edge.bezierControlPoints[i];
+                                _bezierSelected.isSelected = true;
+                                break;
+                            }
+                        }
+                        if (_bezierSelected != null) break;
+
+                    }
+                }
+
+                if ((_vertexSelected == null) && (_edgeSelected == null) && (_bezierSelected == null))
+                {
                     if (_polygon.CheckIsInside(e.Location))
                     {
                         _polygon.isSelected = true;
@@ -171,19 +194,24 @@ namespace PolygonRedactor
                 }
 
 
-            }            
+            }
             else if ((e.Button == MouseButtons.Left))
             {
-                if ((_vertexSelected == null) && (!_isPolygonSelected))
+                if ((_vertexSelected == null) && (!_isPolygonSelected) && (_bezierSelected == null))
                 {
                     _edgeSelected.isSelected = false;
                     _edgeSelected.pressPoint = null;
                     _edgeSelected = null;
                 }
-                else if ((_edgeSelected == null) && (!_isPolygonSelected))
+                else if ((_edgeSelected == null) && (!_isPolygonSelected) && (_bezierSelected == null))
                 {
                     _vertexSelected.isSelected = false;
                     _vertexSelected = null;
+                }
+                else if (_bezierSelected != null)
+                {
+                    _bezierSelected.isSelected = false;
+                    _bezierSelected = null;
                 }
                 else
                 {
@@ -213,11 +241,11 @@ namespace PolygonRedactor
                     {
                         edge.isSelected = true;
                         _edgeSelected = edge;
-                        this.Invalidate();                                       
+                        this.Invalidate();
                         _contextMenu.Show(this, e.Location);
                         break;
                     }
-                }                
+                }
             }
             this.Invalidate();
         }
@@ -241,16 +269,28 @@ namespace PolygonRedactor
                 _polygon.pressPoint = e.Location;
                 this.Invalidate();
             }
+            if (_bezierSelected != null)
+            {
+                _bezierSelected.MovePoint(e.Location);
+                this.Invalidate();
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
             _bresenham.g = e.Graphics;
-            _polygon.DrawPolygon(_bresenham, e.Graphics);
+            _polygon.DrawPolygon(_bresenham, e.Graphics, bresenhamRadioButton.Checked);
             if (_isDrawing)
             {
-                _bresenham.Draw(_startPoint, _currentPoint);
+                if (bresenhamRadioButton.Checked)
+                {
+                    _bresenham.Draw(_startPoint, _currentPoint);
+                }
+                else
+                {
+                    e.Graphics.DrawLine(new Pen(_bresenham.brush),_startPoint, _currentPoint);
+                }
             }
         }
 
@@ -273,17 +313,17 @@ namespace PolygonRedactor
 
         public void Option2_SetVertical(object sender, EventArgs e)
         {
-            
+
             if (IsAvaliableConstraint(EdgeStates.Vertical))
             {
                 _edgeSelected.ChangeState(EdgeStates.Vertical);
             }
-            else 
+            else
             {
                 MessageBox.Show("Invalidate operation", "Warning",
                                  MessageBoxButtons.OK,
                                  MessageBoxIcon.Information);
-                
+
             }
             _edgeSelected.isSelected = false;
             _edgeSelected = null;
@@ -308,11 +348,11 @@ namespace PolygonRedactor
             this.Invalidate();
         }
 
-        public bool IsAvaliableConstraint(EdgeStates toSet) 
+        public bool IsAvaliableConstraint(EdgeStates toSet)
         {
             int i = 0;
             int prev = _polygon.edges.Count - 1;
-            
+
             foreach (Edge e in _polygon.edges)
             {
                 if (e == _edgeSelected) break;
@@ -340,13 +380,22 @@ namespace PolygonRedactor
             this.Invalidate();
         }
 
-        public void Option5_SetBroken(object sender, EventArgs e)
+        public void Option5_Bezier(object sender, EventArgs e)
         {
-            _edgeSelected.ChangeState(EdgeStates.Broken);
+            _edgeSelected.ChangeState(EdgeStates.Bezier);
             _edgeSelected.isSelected = false;
             _edgeSelected = null;
             this.Invalidate();
         }
 
+        private void bresenhamRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            this.Invalidate();
+        }
+
+        private void drawLineRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            this.Invalidate();
+        }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using PolygonRedactor.Enums;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +15,8 @@ namespace PolygonRedactor.Classes.Polygon
         public Vertex end;
         public EdgeStates state = EdgeStates.None;
         public int? length = null;
+        public BezierControlPoint?[] bezierControlPoints = new BezierControlPoint?[2];
+        // public (int dx, int dy)?[] bezierControlPointsSifts = new (int, int)?[2];
 
         public Point? pressPoint = null;
 
@@ -42,7 +46,8 @@ namespace PolygonRedactor.Classes.Polygon
                 case EdgeStates.Fixed:
                     if (!SetFixed()) return;
                     break;
-                case EdgeStates.Broken:
+                case EdgeStates.Bezier:
+                    CreateBezier();
                     break;
             }
 
@@ -145,6 +150,72 @@ namespace PolygonRedactor.Classes.Polygon
             //state = stateBuffer;
             //start.rightConstraint = stateBuffer;
             //end.leftConstraint = stateBuffer;
+
+        }
+
+        private void CreateBezier()
+        {
+            // bezierControlPoints[0] = new BezierControlPoint(start.position);
+            bezierControlPoints[0] = new BezierControlPoint(start.position.X + 50, start.position.Y + 50);
+            bezierControlPoints[1] = new BezierControlPoint(end.position.X - 50, end.position.Y - 50);
+            // bezierControlPoints[3] = new BezierControlPoint(end.position);
+        }
+
+        public void DrawBezier(Graphics g, SolidBrush brush)
+        {
+            Pen pen = new Pen(brush);
+            int steps = 1000;
+            DrawControlPoints(g);
+            PointF prevPoint = start.position;
+            for (int i = 1; i <= steps; i++)
+            {
+                float t = i / (float)steps;  // Calculate t in the range [0, 1]
+
+                // Calculate the point on the Bézier curve using the cubic Bézier formula
+                PointF currentPoint = GetBezierPoint( t);
+
+                // Draw a line from the previous point to the current point
+                g.DrawLine(pen, prevPoint, currentPoint);
+
+                // Update previous point
+                prevPoint = currentPoint;
+            }
+        }
+
+        private PointF GetBezierPoint(float t)
+        {
+            float x = (float)(Math.Pow(1 - t, 3) * start.position.X +
+                              3 * Math.Pow(1 - t, 2) * t * bezierControlPoints[0].position.X +
+                              3 * (1 - t) * Math.Pow(t, 2) * bezierControlPoints[1].position.X +
+                              Math.Pow(t, 3) * end.position.X);
+
+            float y = (float)(Math.Pow(1 - t, 3) * start.position.Y +
+                              3 * Math.Pow(1 - t, 2) * t * bezierControlPoints[0].position.Y +
+                              3 * (1 - t) * Math.Pow(t, 2) * bezierControlPoints[1].position.Y +
+                              Math.Pow(t, 3) * end.position.Y);
+
+            return new PointF(x, y);
+        }
+
+        public void DrawControlPoints(Graphics g)
+        {
+            Pen dashedPen = new Pen(Color.DeepSkyBlue, 1);
+            dashedPen.DashStyle = DashStyle.Dash;
+            int radius = 3;
+            Brush brush = Brushes.DeepSkyBlue;
+            if (bezierControlPoints[0].isSelected == true) { brush = Brushes.Red; }
+            g.FillEllipse(brush, bezierControlPoints[0].position.X - radius,
+                    bezierControlPoints[0].position.Y - radius, 2 * radius, 2 * radius);
+
+            if (bezierControlPoints[1].isSelected == true) { brush = Brushes.Red; }
+            else { brush = Brushes.DeepSkyBlue; }
+            g.FillEllipse(brush, bezierControlPoints[1].position.X - radius,
+                    bezierControlPoints[1].position.Y - radius, 2 * radius, 2 * radius);
+
+            g.DrawLine(dashedPen, start.position, bezierControlPoints[0].position);
+            g.DrawLine(dashedPen, bezierControlPoints[1].position, bezierControlPoints[0].position);
+            g.DrawLine(dashedPen, end.position, bezierControlPoints[1].position);
+
 
         }
 

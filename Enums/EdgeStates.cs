@@ -12,6 +12,6 @@ namespace PolygonRedactor.Enums
         Vertical,
         Horizontal,
         Fixed,
-        Broken
+        Bezier
     }
 }

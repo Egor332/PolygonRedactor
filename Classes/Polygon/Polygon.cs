@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -26,19 +27,29 @@ namespace PolygonRedactor.Classes.Polygon
             edges.Add(new Edge(vertices[vertices.Count - 2], vertices[vertices.Count - 1]));
         }
 
-        private void DrawEdges(Bresenham bresenham)
+        private void DrawEdges(Bresenham bresenham, bool isBresenham)
         {
             foreach (Edge e in edges)
             {
                 if (e.isSelected)
                 {
                     bresenham.brush = new SolidBrush(Color.Red);
-                    bresenham.Draw(e.start.position, e.end.position);
+                    if (e.state != Enums.EdgeStates.Bezier)
+                    {
+                        if (isBresenham) bresenham.Draw(e.start.position, e.end.position);
+                        else bresenham.g.DrawLine(new Pen(bresenham.brush), e.start.position, e.end.position);
+                    }
+                    else e.DrawBezier(bresenham.g, bresenham.brush);
                     bresenham.brush = new SolidBrush(Color.Black);
                 }
                 else
                 {
-                    bresenham.Draw(e.start.position, e.end.position);
+                    if (e.state != Enums.EdgeStates.Bezier) 
+                    {
+                        if (isBresenham) bresenham.Draw(e.start.position, e.end.position);
+                        else bresenham.g.DrawLine(new Pen(bresenham.brush), e.start.position, e.end.position);
+                    }
+                    else e.DrawBezier(bresenham.g, bresenham.brush);
                 }
                 
             }
@@ -67,28 +78,28 @@ namespace PolygonRedactor.Classes.Polygon
             edges.Add(new Edge(vertices[vertices.Count - 1], vertices[0]));
         }
 
-        public void DrawPolygon(Bresenham bresenham, Graphics g) 
+        public void DrawPolygon(Bresenham bresenham, Graphics g, bool isBresenham) 
         {
 
-            if (vertices.Count >= 3)
-            {
-                Point[] points = new Point[vertices.Count];
-                int i = 0;
-                foreach (Vertex v in vertices)
-                {
-                    points[i] = v.position;
-                    i++;
-                }
-                if (isSelected)
-                {
-                    g.FillPolygon(Brushes.LightCoral, points);
-                }
-                else 
-                {
-                    g.FillPolygon(Brushes.LightGray, points);
-                }
-            }
-            DrawEdges(bresenham);
+            //if (vertices.Count >= 3)
+            //{
+            //    Point[] points = new Point[vertices.Count];
+            //    int i = 0;
+            //    foreach (Vertex v in vertices)
+            //    {
+            //        points[i] = v.position;
+            //        i++;
+            //    }
+            //    if (isSelected)
+            //    {
+            //        g.FillPolygon(Brushes.LightCoral, points);
+            //    }
+            //    else
+            //    {
+            //        g.FillPolygon(Brushes.LightGray, points);
+            //    }
+            //}
+            DrawEdges(bresenham, isBresenham);
             DrawVertices(g);
             SetAllUnused();
         }
@@ -123,14 +134,44 @@ namespace PolygonRedactor.Classes.Polygon
 
         public void RemoveVertex(Vertex v)
         {
+            if (vertices.Count == 3)
+            {
+                MessageBox.Show("Invalidate operation:\n only 3 vertices left", "Warning",
+                                 MessageBoxButtons.OK,
+                                 MessageBoxIcon.Information);
+                return;
+            }
             if (v.leftEdge != null)
             { 
                 v.leftEdge.start.rightConstraint = Enums.EdgeStates.None;
             }
-            v.rightEdge.end.leftConstraint = Enums.EdgeStates.None;
-            v.leftEdge.end = v.rightEdge.end;
-            edges.Remove(v.rightEdge);
-            vertices.Remove(v);
+            if (v.rightEdge != null)
+            {
+                v.rightEdge.end.leftConstraint = Enums.EdgeStates.None;
+            }
+            int i = 0;
+            foreach (Vertex vert in vertices)
+            {
+                if (vert == v) break;
+                i++;
+            }
+            int prevEdge;
+            if (i == 0)
+            {
+                prevEdge = edges.Count - 1;
+            }
+            else
+            {
+                prevEdge = i - 1;
+            }
+            Edge e = edges[prevEdge];
+            int nextV;
+            if (i == vertices.Count - 1) nextV = 0;
+            else nextV = i + 1;
+            e.end = vertices[nextV];
+            
+            edges.RemoveAt(i);
+            vertices.RemoveAt(i);
         }
 
         public bool CheckIsInside(Point point)
