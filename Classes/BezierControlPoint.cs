@@ -34,7 +34,7 @@ namespace PolygonRedactor.Classes
             }
             else
             {
-
+                (x, y) = MakeForC1Bezier(v.position, c.position);
             }
             position = new Point(x, y);
         }
@@ -48,7 +48,7 @@ namespace PolygonRedactor.Classes
             }
             else
             {
-                
+                (x, y) = MakeForC1Edge(v.position, c.position);
             }
             position = new Point(x, y);
         }
@@ -61,6 +61,23 @@ namespace PolygonRedactor.Classes
             int xChange = Convert.ToInt32(((double)dx / (double)length) * (100));
             int yChange = Convert.ToInt32(((double)dy / (double)length) * (100));
             return (p.X + xChange, p.Y + yChange);
+        }
+
+        private (int, int) MakeForC1Edge(Point p, Point pp)
+        {
+            int dx = p.X - pp.X;
+            int dy = p.Y - pp.Y;
+            int length = Edge.Distance(p, pp);
+            int xChange = Convert.ToInt32(((double)dx / (double)length) * ((double)length / 3.0));
+            int yChange = Convert.ToInt32(((double)dy / (double)length) * ((double)length / 3.0));
+            return (p.X + xChange, p.Y + yChange);
+        }
+
+        private (int, int) MakeForC1Bezier(Point p, Point pp)
+        {
+            int dx = p.X - pp.X;
+            int dy = p.Y - pp.Y;
+            return (p.X + dx, p.Y + dy);
         }
 
         public void MovePoint(Point p)
