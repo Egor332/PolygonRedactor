@@ -20,6 +20,8 @@ namespace PolygonRedactor.Classes.Polygon
         public EdgeStates rightConstraint = EdgeStates.None;
         public Edge? rightEdge = null;
 
+        public BezierStates bezierState = BezierStates.G1;
+
         public Vertex(Point position)
         {
             this.position = position;
@@ -67,6 +69,10 @@ namespace PolygonRedactor.Classes.Polygon
                     (int xChange, int yChange) = DoFixedEdge(leftEdge.start, leftEdge.length.Value);
                     leftEdge.start.DoLeftCycle(xChange, yChange);
                 }
+                if (leftConstraint == EdgeStates.Bezier)
+                {
+                    leftEdge.bezierControlPoints[1].MovePointDelta(dx, dy);
+                }
             }
             if (rightEdge != null)
             {
@@ -82,6 +88,10 @@ namespace PolygonRedactor.Classes.Polygon
                 {
                     (int xChange, int yChange) = DoFixedEdge(rightEdge.end, rightEdge.length.Value);
                     rightEdge.end.DoRightCycle(xChange, yChange);
+                }
+                if (rightConstraint == EdgeStates.Bezier)
+                {
+                    rightEdge.bezierControlPoints[0].MovePointDelta(dx, dy);
                 }
             }
             //if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
@@ -130,6 +140,10 @@ namespace PolygonRedactor.Classes.Polygon
                 (int xChange, int yChange) = DoFixedEdge(leftEdge.start, leftEdge.length.Value);
                 leftEdge.start.DoLeftCycle(xChange, yChange);
             }
+            if (leftConstraint == EdgeStates.Bezier) 
+            {
+                leftEdge.bezierControlPoints[1].MovePointDelta(dx, dy);
+            }
         }
 
         private void DoRightCycle(int dx, int dy)
@@ -149,6 +163,10 @@ namespace PolygonRedactor.Classes.Polygon
             {
                 (int xChange, int yChange) = DoFixedEdge(rightEdge.end, rightEdge.length.Value);
                 rightEdge.end.DoRightCycle(xChange, yChange);
+            }
+            if (rightConstraint == EdgeStates.Bezier)
+            {
+                rightEdge.bezierControlPoints[0].MovePointDelta(dx, dy);
             }
         }
 
@@ -170,6 +188,19 @@ namespace PolygonRedactor.Classes.Polygon
             int dy = p.Y - start.Y;
             position.X += dx;
             position.Y += dy;
+            if (leftConstraint == EdgeStates.Bezier)
+            {
+                leftEdge.bezierControlPoints[1].MovePointDelta(dx, dy);
+            }
+            if (rightConstraint == EdgeStates.Bezier)
+            {
+                rightEdge.bezierControlPoints[0].MovePointDelta(dx, dy);
+            }
+        }
+
+        public void SetBezierState(BezierStates state)
+        {
+            bezierState = state;
         }
     }
 }

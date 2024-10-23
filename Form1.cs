@@ -38,6 +38,9 @@ namespace PolygonRedactor
             _contextMenu.Items.Add("Set fixed", null, Option4_SetFixed);
             _contextMenu.Items.Add("Bezier", null, Option5_Bezier);
             _contextMenuVertex.Items.Add("Delete vertex", null, Option_DeleteVertex);
+            _contextMenuVertex.Items.Add("Set G0", null, Option_SetG0);
+            _contextMenuVertex.Items.Add("Set G1", null, Option_SetG1);
+            _contextMenuVertex.Items.Add("Set C1", null, Option_SetC1);
             ControlButton.Text = (controlButtonState).ToString();
             bresenhamRadioButton.Checked = true;
         }
@@ -85,6 +88,10 @@ namespace PolygonRedactor
         private void CleanPolygon()
         {
             _polygon = new Polygon();
+            _vertexSelected = null;
+            _edgeSelected = null;
+            _isPolygonSelected = false;
+            _bezierSelected = null;
             this.Invalidate();
         }
 
@@ -302,6 +309,29 @@ namespace PolygonRedactor
             this.Invalidate();
         }
 
+        private void Option_SetG0(object sender, EventArgs e)
+        {
+            _vertexSelected.SetBezierState(BezierStates.G0);
+            _vertexSelected.isSelected = false;
+            _vertexSelected = null;
+            this.Invalidate();
+        }
+
+        private void Option_SetG1(object sender, EventArgs e)
+        {
+            _vertexSelected.SetBezierState(BezierStates.G1);
+            _vertexSelected.isSelected = false;
+            _vertexSelected = null;
+            this.Invalidate();
+        }
+
+        private void Option_SetC1(object sender, EventArgs e)
+        {
+            _vertexSelected.SetBezierState(BezierStates.C1);
+            _vertexSelected.isSelected = false;
+            _vertexSelected = null;
+            this.Invalidate();
+        }
 
         private void Option1_AddPoint(object sender, EventArgs e)
         {

@@ -76,6 +76,16 @@ namespace PolygonRedactor.Classes.Polygon
         public void AddFinalEdge()
         {
             edges.Add(new Edge(vertices[vertices.Count - 1], vertices[0]));
+            AssignEdgesToVertices();
+        }
+
+        private void AssignEdgesToVertices()
+        {
+            foreach (Edge e in edges)
+            {
+                e.end.leftEdge = e;
+                e.start.rightEdge = e;
+            }
         }
 
         public void DrawPolygon(Bresenham bresenham, Graphics g, bool isBresenham) 
