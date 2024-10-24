@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolygonRedactor.Enums;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -215,6 +216,22 @@ namespace PolygonRedactor.Classes.Polygon
             {
                 v.used = false;
             } 
+        }
+
+        public void ResetAllLengthes()
+        {
+            foreach (Edge e in edges)
+            {
+                if (e.state == EdgeStates.Fixed) continue;
+                if (e.state == EdgeStates.Bezier)
+                {
+                    e.bezierControlPoints[0].length = Edge.Distance(e.start.position, e.bezierControlPoints[0].position);
+                    e.bezierControlPoints[1].length = Edge.Distance(e.end.position, e.bezierControlPoints[1].position);
+                    continue;
+                }
+                e.length = Edge.Distance(e.start.position, e.end.position);
+                
+            }
         }
     }
 }

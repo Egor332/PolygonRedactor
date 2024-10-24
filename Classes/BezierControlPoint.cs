@@ -13,6 +13,7 @@ namespace PolygonRedactor.Classes
     {
         public Point position;
         public bool isSelected = false;
+        public int length = 0;
         private int radius = 4;
 
         public BezierControlPoint(Point position)
@@ -116,7 +117,16 @@ namespace PolygonRedactor.Classes
             }
             else
             {
+                if (v.bezierState == BezierStates.G1)
+                {
+                    if (v.leftConstraint == EdgeStates.Vertical) this.position.X -= dx;
+                    else if (v.leftConstraint == EdgeStates.Horizontal) this.position.Y -= dy;
+                    else KeepG1Vertex(v, v.leftEdge.end);
+                }
+                else
+                {
 
+                }
             }
         }
 
@@ -135,18 +145,31 @@ namespace PolygonRedactor.Classes
             }
             else
             {
+                if (v.bezierState == BezierStates.G1)
+                {
+                    if (v.rightConstraint == EdgeStates.Vertical) this.position.X -= dx;
+                    else if (v.rightConstraint == EdgeStates.Horizontal) this.position.Y -= dy;
+                    else KeepG1Vertex(v, v.rightEdge.end);
+                }
+                else
+                {
 
+                }
             }
         }
 
-        private void KeepG1Bezier(Vertex v, BezierControlPoint p)
+        private void KeepG1Vertex(Vertex v, Vertex c)
         {
-            int lengthP =100; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        }
+
+        private void KeepG1Bezier(Vertex v, BezierControlPoint p)
+        {           
             int dx = this.position.X - v.position.X;
             int dy = this.position.Y - v.position.Y;
             int lengthV = Edge.Distance(v.position, this.position);
-            int xChange = Convert.ToInt32(Math.Floor(((double)dx / (double)lengthV) * (lengthP)));
-            int yChange = Convert.ToInt32(Math.Floor(((double)dy / (double)lengthV) * (lengthP)));
+            int xChange = Convert.ToInt32(Math.Floor(((double)dx / (double)lengthV) * (p.length)));
+            int yChange = Convert.ToInt32(Math.Floor(((double)dy / (double)lengthV) * (p.length)));
             p.MovePointEnforce(v.position.X - xChange, v.position.Y - yChange);
 
         }

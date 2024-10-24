@@ -184,6 +184,7 @@ namespace PolygonRedactor
                             _bezierSelected = edge.bezierControlPoints[0];
                             _bezierSelected.isSelected = true;
                             _asociatedVertex = edge.start;
+                            _polygon.ResetAllLengthes();
                             break;
                         }
                         if (edge.bezierControlPoints[1].CheckIsInArea(e.Location))
@@ -191,6 +192,7 @@ namespace PolygonRedactor
                             _bezierSelected = edge.bezierControlPoints[1];
                             _bezierSelected.isSelected = true;
                             _asociatedVertex = edge.end;
+                            _polygon.ResetAllLengthes();
                             break;
                         }
                     }
