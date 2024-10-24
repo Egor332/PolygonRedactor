@@ -125,8 +125,10 @@ namespace PolygonRedactor.Classes
                 }
                 else // C1
                 {
-                    if (v.leftConstraint == EdgeStates.Vertical) { this.position.X -= dx; v. }
-                    else if (v.leftConstraint == EdgeStates.Horizontal) this.position.Y -= dy;
+                    if (v.leftConstraint == EdgeStates.Vertical) { this.position.X -= dx;
+                        v.leftEdge.start.MovePointDelta(0, -3*dy); }
+                    else if (v.leftConstraint == EdgeStates.Horizontal) { this.position.Y -= dy;
+                        v.leftEdge.start.MovePointDelta(-dx * 3, 0); }
                     else KeepG1Vertex(v, v.leftEdge.start, v.leftEdge.length.Value);
                 }
             }
@@ -155,8 +157,10 @@ namespace PolygonRedactor.Classes
                 }
                 else // C1
                 {
-                    if (v.rightConstraint == EdgeStates.Vertical) { this.position.X -= dx; v.MovePointDelta(0, dy); }
-                    else if (v.rightConstraint == EdgeStates.Horizontal) { this.position.Y -= dy; v.MovePointDelta(dx, 0); }
+                    if (v.rightConstraint == EdgeStates.Vertical) { this.position.X -= dx;
+                        v.rightEdge.end.MovePointDelta(0, -dy*3); }
+                    else if (v.rightConstraint == EdgeStates.Horizontal) { this.position.Y -= dy;
+                        v.rightEdge.end.MovePointDelta(-3*dx, 0); }
                     else KeepG1Vertex(v, v.rightEdge.end, v.rightEdge.length.Value);
                 }
             }
