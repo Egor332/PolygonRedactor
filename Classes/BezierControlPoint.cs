@@ -121,11 +121,13 @@ namespace PolygonRedactor.Classes
                 {
                     if (v.leftConstraint == EdgeStates.Vertical) this.position.X -= dx;
                     else if (v.leftConstraint == EdgeStates.Horizontal) this.position.Y -= dy;
-                    else KeepG1Vertex(v, v.leftEdge.end);
+                    else KeepG1Vertex(v, v.leftEdge.start, v.leftEdge.length.Value);
                 }
-                else
+                else // C1
                 {
-
+                    if (v.leftConstraint == EdgeStates.Vertical) { this.position.X -= dx; v. }
+                    else if (v.leftConstraint == EdgeStates.Horizontal) this.position.Y -= dy;
+                    else KeepG1Vertex(v, v.leftEdge.start, v.leftEdge.length.Value);
                 }
             }
         }
@@ -149,18 +151,25 @@ namespace PolygonRedactor.Classes
                 {
                     if (v.rightConstraint == EdgeStates.Vertical) this.position.X -= dx;
                     else if (v.rightConstraint == EdgeStates.Horizontal) this.position.Y -= dy;
-                    else KeepG1Vertex(v, v.rightEdge.end);
+                    else KeepG1Vertex(v, v.rightEdge.end, v.rightEdge.length.Value);
                 }
-                else
+                else // C1
                 {
-
+                    if (v.rightConstraint == EdgeStates.Vertical) { this.position.X -= dx; v.MovePointDelta(0, dy); }
+                    else if (v.rightConstraint == EdgeStates.Horizontal) { this.position.Y -= dy; v.MovePointDelta(dx, 0); }
+                    else KeepG1Vertex(v, v.rightEdge.end, v.rightEdge.length.Value);
                 }
             }
         }
 
-        private void KeepG1Vertex(Vertex v, Vertex c)
+        private void KeepG1Vertex(Vertex v, Vertex c, int len)
         {
-
+            int dx = this.position.X - v.position.X;
+            int dy = this.position.Y - v.position.Y;
+            int lengthV = Edge.Distance(v.position, this.position);
+            int xChange = Convert.ToInt32(Math.Floor(((double)dx / (double)lengthV) * (len)));
+            int yChange = Convert.ToInt32(Math.Floor(((double)dy / (double)lengthV) * (len)));
+            c.MovePoint(v.position.X - xChange, v.position.Y - yChange);
         }
 
         private void KeepG1Bezier(Vertex v, BezierControlPoint p)

@@ -45,6 +45,14 @@ namespace PolygonRedactor.Classes.Polygon
             MovePointDelta(dx, dy);
         }
 
+        public void MovePoint(int x, int y)
+        {
+            int dx = x - this.position.X;
+            int dy = y - this.position.Y;
+
+            MovePointDelta(dx, dy);
+        }
+
         public void MovePointDelta(int dx, int dy)
         {
             if (used)
