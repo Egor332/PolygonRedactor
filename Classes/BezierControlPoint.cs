@@ -2,6 +2,7 @@
 using PolygonRedactor.Enums;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -129,7 +130,7 @@ namespace PolygonRedactor.Classes
                         v.leftEdge.start.MovePointDelta(0, -3*dy); }
                     else if (v.leftConstraint == EdgeStates.Horizontal) { this.position.Y -= dy;
                         v.leftEdge.start.MovePointDelta(-dx * 3, 0); }
-                    else KeepG1Vertex(v, v.leftEdge.start, v.leftEdge.length.Value);
+                    else KeepC1Vertex(v, v.leftEdge.start, v.leftEdge);
                 }
             }
         }
@@ -161,8 +162,29 @@ namespace PolygonRedactor.Classes
                         v.rightEdge.end.MovePointDelta(0, -dy*3); }
                     else if (v.rightConstraint == EdgeStates.Horizontal) { this.position.Y -= dy;
                         v.rightEdge.end.MovePointDelta(-3*dx, 0); }
-                    else KeepG1Vertex(v, v.rightEdge.end, v.rightEdge.length.Value);
+                    else KeepC1Vertex(v, v.rightEdge.end, v.rightEdge);
                 }
+            }
+        }
+
+        private void KeepC1Vertex(Vertex v, Vertex c, Edge e)
+        {
+            int dx = this.position.X - v.position.X;
+            int dy = this.position.Y - v.position.Y;
+            int lengthV = Edge.Distance(v.position, this.position);
+            if (e.state == EdgeStates.Fixed)
+            {
+                position.X = v.position.X + Convert.ToInt32((((double)dx / (double)lengthV) * ((double)e.length / 3)));
+                position.Y = v.position.Y + Convert.ToInt32((((double)dy / (double)lengthV) * ((double)e.length / 3)));
+                int xChange = Convert.ToInt32((((double)dx / (double)lengthV) * (e.length)));
+                int yChange = Convert.ToInt32((((double)dy / (double)lengthV) * (e.length)));
+                c.MovePoint(v.position.X - xChange, v.position.Y - yChange);
+            }
+            else
+            {
+                int xChange = Convert.ToInt32((((double)dx / (double)lengthV) * (lengthV*3)));
+                int yChange = Convert.ToInt32((((double)dy / (double)lengthV) * (lengthV*3)));
+                c.MovePoint(v.position.X - xChange, v.position.Y - yChange);
             }
         }
 
@@ -171,8 +193,8 @@ namespace PolygonRedactor.Classes
             int dx = this.position.X - v.position.X;
             int dy = this.position.Y - v.position.Y;
             int lengthV = Edge.Distance(v.position, this.position);
-            int xChange = Convert.ToInt32(Math.Floor(((double)dx / (double)lengthV) * (len)));
-            int yChange = Convert.ToInt32(Math.Floor(((double)dy / (double)lengthV) * (len)));
+            int xChange = Convert.ToInt32((((double)dx / (double)lengthV) * (len)));
+            int yChange = Convert.ToInt32((((double)dy / (double)lengthV) * (len)));
             c.MovePoint(v.position.X - xChange, v.position.Y - yChange);
         }
 

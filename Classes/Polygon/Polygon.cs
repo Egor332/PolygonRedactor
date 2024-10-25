@@ -233,5 +233,13 @@ namespace PolygonRedactor.Classes.Polygon
                 
             }
         }
+
+        public void ResetBezier()
+        {
+            foreach (Vertex v in vertices)
+            {
+
+            }
+        }
     }
 }

@@ -153,6 +153,7 @@ namespace PolygonRedactor
                     {
                         v.isSelected = true;
                         _vertexSelected = v;
+                        _polygon.ResetAllLengthes();
                         break;
                     }
                 }
@@ -163,10 +164,11 @@ namespace PolygonRedactor
                     {
                         if (edge.IsOnEdge(e.Location))
                         {
-                            if (edge.state == EdgeStates.Bezier) continue;
+                            if (edge.state != EdgeStates.None) continue;
                             edge.isSelected = true;
                             _edgeSelected = edge;
                             _edgeSelected.pressPoint = e.Location;
+                            _polygon.ResetAllLengthes();
                             break;
                         }
                     }
@@ -271,12 +273,14 @@ namespace PolygonRedactor
             if (_vertexSelected != null)
             {
                 _vertexSelected.MovePoint(e.Location, _vertexSelected.position);
+                _polygon.ResetBezier();
                 this.Invalidate();
             }
             if (_edgeSelected != null)
             {
                 _edgeSelected.MoveEdge(e.Location, this.Width, this.Height);
                 _edgeSelected.pressPoint = e.Location;
+                _polygon.ResetBezier();
                 this.Invalidate();
             }
             if (_isPolygonSelected)

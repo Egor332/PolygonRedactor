@@ -77,10 +77,10 @@ namespace PolygonRedactor.Classes.Polygon
                     (int xChange, int yChange) = DoFixedEdge(leftEdge.start, leftEdge.length.Value);
                     leftEdge.start.DoLeftCycle(xChange, yChange);
                 }
-                if (leftConstraint == EdgeStates.Bezier)
-                {
-                    leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(dx, dy);
-                }
+                //if (leftConstraint == EdgeStates.Bezier)
+                //{
+                //    leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(dx, dy);
+                //}
             }
             if (rightEdge != null)
             {
@@ -97,10 +97,10 @@ namespace PolygonRedactor.Classes.Polygon
                     (int xChange, int yChange) = DoFixedEdge(rightEdge.end, rightEdge.length.Value);
                     rightEdge.end.DoRightCycle(xChange, yChange);
                 }
-                if (rightConstraint == EdgeStates.Bezier)
-                {
-                    rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(dx, dy);
-                }
+                //if (rightConstraint == EdgeStates.Bezier)
+                //{
+                //    rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(dx, dy);
+                //}
             }
             //if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
             //{
@@ -152,6 +152,7 @@ namespace PolygonRedactor.Classes.Polygon
             {
                 leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(dx, dy);
             }
+            // MoveConnectedControlPointsLeft(oldX, oldY);
         }
 
         private void DoRightCycle(int dx, int dy)
@@ -172,10 +173,7 @@ namespace PolygonRedactor.Classes.Polygon
                 (int xChange, int yChange) = DoFixedEdge(rightEdge.end, rightEdge.length.Value);
                 rightEdge.end.DoRightCycle(xChange, yChange);
             }
-            if (rightConstraint == EdgeStates.Bezier)
-            {
-                rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(dx, dy);
-            }
+            // MoveConnectedControlPointsRight(oldX, oldY);
         }
 
         private (int dx, int dy) DoFixedEdge(Vertex v, int length)
@@ -196,12 +194,25 @@ namespace PolygonRedactor.Classes.Polygon
             int dy = p.Y - start.Y;
             position.X += dx;
             position.Y += dy;
+            MoveConnectedControlPointsLeft(dx, dy);
+            MoveConnectedControlPointsRight(dx, dy);
+        }
+
+        private void MoveConnectedControlPointsLeft(int dx, int dy)
+        {
             if (leftConstraint == EdgeStates.Bezier)
             {
+                //int x = leftEdge.bezierControlPoints[1].position.X;
+                //int y = leftEdge.bezierControlPoints[1].position.Y;
                 leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(dx, dy);
             }
+        }
+        private void MoveConnectedControlPointsRight(int dx, int dy)
+        {
             if (rightConstraint == EdgeStates.Bezier)
             {
+                //int x = rightEdge.bezierControlPoints[0].position.X;
+                //int y = rightEdge.bezierControlPoints[0].position.Y;
                 rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(dx, dy);
             }
         }
