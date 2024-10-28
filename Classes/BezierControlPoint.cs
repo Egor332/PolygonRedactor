@@ -113,7 +113,9 @@ namespace PolygonRedactor.Classes
                 }
                 else
                 {
-                    v.leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(-dx, -dy);
+                    int changeX = position.X - v.position.X;
+                    int changeY = position.Y - v.position.Y;
+                    v.leftEdge.bezierControlPoints[1].MovePointEnforce(v.position.X - changeX, v.position.Y - changeY);
                 }
             }
             else
@@ -162,7 +164,9 @@ namespace PolygonRedactor.Classes
                 }
                 else
                 {
-                    v.rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(-dx, -dy);
+                    int changeX = position.X - v.position.X;
+                    int changeY = position.Y - v.position.Y;
+                    v.rightEdge.bezierControlPoints[0].MovePointEnforce(v.position.X - changeX, v.position.Y - changeY);
                 }
             }
             else
