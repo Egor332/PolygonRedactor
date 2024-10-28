@@ -62,6 +62,11 @@ namespace PolygonRedactor.Classes.Polygon
             used = true;
             position.X += dx;
             position.Y += dy;
+            if ((leftConstraint == EdgeStates.Bezier) && (rightConstraint == EdgeStates.Bezier) && ((bezierState == BezierStates.C1) || (bezierState == BezierStates.G1)))
+            {
+                leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(dx, dy);
+                rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(dx, dy);
+            }
             if (leftEdge != null)
             {
                 if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
@@ -76,7 +81,7 @@ namespace PolygonRedactor.Classes.Polygon
                 {
                     (int xChange, int yChange) = DoFixedEdge(leftEdge.start, leftEdge.length.Value);
                     leftEdge.start.DoLeftCycle(xChange, yChange);
-                }
+                }                
             }
             if (rightEdge != null)
             {
@@ -122,6 +127,11 @@ namespace PolygonRedactor.Classes.Polygon
             {
                 leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(dx, dy);
             }
+            if ((leftConstraint == EdgeStates.Bezier) && (rightConstraint == EdgeStates.Bezier) && ((bezierState == BezierStates.C1) || (bezierState == BezierStates.G1)))
+            {
+                leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(dx, dy);
+                rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(dx, dy);
+            }
             // MoveConnectedControlPointsLeft(oldX, oldY);
         }
 
@@ -142,6 +152,11 @@ namespace PolygonRedactor.Classes.Polygon
             {
                 (int xChange, int yChange) = DoFixedEdge(rightEdge.end, rightEdge.length.Value);
                 rightEdge.end.DoRightCycle(xChange, yChange);
+            }
+            if ((leftConstraint == EdgeStates.Bezier) && (rightConstraint == EdgeStates.Bezier) && ((bezierState == BezierStates.C1) || (bezierState == BezierStates.G1)))
+            {
+                leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(dx, dy);
+                rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(dx, dy);
             }
             // MoveConnectedControlPointsRight(oldX, oldY);
         }
