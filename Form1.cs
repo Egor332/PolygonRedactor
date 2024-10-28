@@ -1,4 +1,4 @@
-using PolygonRedactor.Classes;
+﻿using PolygonRedactor.Classes;
 using PolygonRedactor.Classes.Polygon;
 using PolygonRedactor.Enums;
 using System.ComponentModel;
@@ -10,6 +10,27 @@ namespace PolygonRedactor
 
     public partial class Form1 : Form
     {
+        private const string _startInstruction = "Aby narysować nowy wielokąt, trzeba kliknąć przycisk \"Draw\".";
+        private const string _drawingInstruction = "Aby dodać nowy punkt, trzeba kliknąć lewy przycisk myszy.\r\n" +
+            "Aby skończyć rysowanie wielokąta, nie trzeba zamykać wielokąta, trzeba kliknąć \"Stop\"." +
+            "Między pierwszym a ostatnim punktem automatycznie pojawi się krawędź.\r\n" +
+            "Uwagi:\r\n" +
+            "Aby skończyć rysowanie, muszą istnieć co najmniej 3 wierzchołki.";
+        private const string _modifyInstruction = "Aby usunąć wielokąt, trzeba kliknąć \"Clean\".\r\n" +
+            "Aby przenieść cały wielokąt, trzeba kliknąć lewym klawiszem myszy" +
+            " wewnątrz wielokąta, wielokąt będzie podążał za kursorem. Drugie kliknięcie lewego klawiszu skończy przenoszenie.\r\n" +
+            "Aby przenieść wierzchołek/krawędź, trzeba kliknąć obiekt lewym przyciskiem myszy. Obiekt będzie podążał za kursorem. " +
+            "Drugie kliknięcie lewego klawiszu skończy przenoszenie.\r\n" +
+            "Kliknięcie prawym klawiszem myszy na krawędź powoduje pojawienie menu kontekstowego, w którym można wybrać ograniczenie.\r\n" +
+            "Legenda:\r\n" +
+            "Zaznaczony obiekt jest pokolorowany na czerwono.\r\n" +
+            "Krawędź pozioma zaznaczona znaczkiem \"-\".\r\n" +
+            "Krawędź pionowa zaznaczona znaczkiem \"|\".\r\n" +
+            "Krawędź stałej długości zaznaczona zielonym kółkiem w środku.\r\n" +
+            "Uwagi:\r\n" +
+            "Długość krawędzi wskazana w pikselach.\r\n" +
+            "Krawędzi z ograniczniami nie można przenosić";
+
         private bool _isDrawing = false;
         private Point _startPoint;
         private Point _currentPoint;
@@ -44,6 +65,10 @@ namespace PolygonRedactor
             _contextMenuVertex.Items.Add("Set G1", null, Option_SetG1);
             _contextMenuVertex.Items.Add("Set C1", null, Option_SetC1);
             ControlButton.Text = (controlButtonState).ToString();
+            InstructionBox.Multiline = true;
+            InstructionBox.Height = this.Height - 131;
+            InstructionBox.ScrollBars = ScrollBars.Vertical;
+            InstructionBox.Text = _startInstruction;
             bresenhamRadioButton.Checked = true;
             ControlButton_Click(this, EventArgs.Empty);
             _polygon.AddNewVertex(new Point(150 + 200, 150 + 200));
@@ -60,7 +85,7 @@ namespace PolygonRedactor
             Option2_SetVertical(this, EventArgs.Empty);
             _edgeSelected = _polygon.edges[2];
             Option3_SetHorizontal(this, EventArgs.Empty);
-
+            InstructionBox.Multiline = true;
         }
 
         private void ControlButton_Click(object sender, EventArgs e)
@@ -90,6 +115,7 @@ namespace PolygonRedactor
 
         private void StartDrawing()
         {
+            InstructionBox.Text = _drawingInstruction;
             this.MouseDown += Draw_MouseDown;
             this.MouseMove += Draw_MouseMove;
         }
@@ -103,7 +129,7 @@ namespace PolygonRedactor
             _polygon.AddFinalEdge();
             this.MouseDown -= Draw_MouseDown;
             this.MouseMove -= Draw_MouseMove;
-            _isDrawing = false;
+            _isDrawing = false;            
             this.Invalidate();
         }
 
@@ -157,12 +183,14 @@ namespace PolygonRedactor
 
         private void StartModifying()
         {
+            InstructionBox.Text = _modifyInstruction;
             this.MouseDown += Modify_MouseDown;
             this.MouseMove += Modify_MouseMove;
         }
 
         private void StopModifying()
         {
+            InstructionBox.Text = _startInstruction;
             this.MouseDown -= Modify_MouseDown;
             this.MouseMove -= Modify_MouseMove;
         }
