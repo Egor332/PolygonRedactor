@@ -33,6 +33,8 @@
             drawLineRadioButton = new RadioButton();
             InstructionBox = new TextBox();
             ShowAlgButton = new Button();
+            SaveButton = new Button();
+            LoadButton = new Button();
             SuspendLayout();
             // 
             // ControlButton
@@ -87,11 +89,33 @@
             ShowAlgButton.UseVisualStyleBackColor = true;
             ShowAlgButton.Click += ShowAlgButton_Click;
             // 
+            // SaveButton
+            // 
+            SaveButton.Location = new Point(154, 16);
+            SaveButton.Name = "SaveButton";
+            SaveButton.Size = new Size(94, 29);
+            SaveButton.TabIndex = 5;
+            SaveButton.Text = "Save";
+            SaveButton.UseVisualStyleBackColor = true;
+            SaveButton.Click += SaveButton_Click;
+            // 
+            // LoadButton
+            // 
+            LoadButton.Location = new Point(154, 51);
+            LoadButton.Name = "LoadButton";
+            LoadButton.Size = new Size(94, 29);
+            LoadButton.TabIndex = 6;
+            LoadButton.Text = "Load";
+            LoadButton.UseVisualStyleBackColor = true;
+            LoadButton.Click += LoadButton_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1103, 700);
+            Controls.Add(LoadButton);
+            Controls.Add(SaveButton);
             Controls.Add(ShowAlgButton);
             Controls.Add(InstructionBox);
             Controls.Add(drawLineRadioButton);
@@ -111,5 +135,7 @@
         private RadioButton drawLineRadioButton;
         private TextBox InstructionBox;
         private Button ShowAlgButton;
+        private Button SaveButton;
+        private Button LoadButton;
     }
 }

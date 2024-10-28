@@ -5,6 +5,9 @@ using System.ComponentModel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using PolygonRedactor.Classes.ForSerialization;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace PolygonRedactor
 {
@@ -143,7 +146,7 @@ namespace PolygonRedactor
 
         private void StartDrawing()
         {
-            if (isAlg== false) InstructionBox.Text = _drawingInstruction;
+            if (isAlg == false) InstructionBox.Text = _drawingInstruction;
             this.MouseDown += Draw_MouseDown;
             this.MouseMove += Draw_MouseMove;
         }
@@ -578,6 +581,103 @@ namespace PolygonRedactor
                 InstructionBox.Text = _algDesc;
                 ShowAlgButton.Text = "Show user manual";
             }
+        }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            PolygonForSerialization polygonForSerialization = new PolygonForSerialization();
+            polygonForSerialization.vertices = new List<VertexForSerialization>();
+            polygonForSerialization.edges = new List<EdgeForSerialization>();
+            foreach (Vertex v in _polygon.vertices)
+            {
+                VertexForSerialization vS = new VertexForSerialization();
+                vS.position = v.position;
+                vS.bezierState = v.bezierState;
+                polygonForSerialization.vertices.Add(vS);
+            }
+            foreach (Edge ed in _polygon.edges)
+            {
+                EdgeForSerialization eS = new EdgeForSerialization();
+                eS.state = ed.state;
+                eS.length = ed.length;
+                eS.bezierControlPoints = new BezierForSerialization?[2];
+                if (ed.bezierControlPoints[0] != null)
+                {
+                    BezierForSerialization bF0 = new BezierForSerialization();
+                    BezierForSerialization bF1 = new BezierForSerialization();
+                    bF0.position = ed.bezierControlPoints[0].position;
+                    bF0.length = ed.bezierControlPoints[0].length;
+                    bF1.position = ed.bezierControlPoints[1].position;
+                    bF1.length = ed.bezierControlPoints[1].length;
+                    eS.bezierControlPoints[0] = bF0;
+                    eS.bezierControlPoints[1] = bF1;
+                }
+                polygonForSerialization.edges.Add(eS);
+            }
+            JsonSerializerOptions options = new JsonSerializerOptions { IncludeFields = true, WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(polygonForSerialization, options);
+            File.WriteAllText("PolygonInJson.json", jsonString);
+        }
+
+        private void LoadButton_Click(object sender, EventArgs e)
+        {
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            string jsonString = File.ReadAllText("PolygonInJson.json");
+            PolygonForSerialization pS = JsonSerializer.Deserialize<PolygonForSerialization>(jsonString, options);
+            if (controlButtonState == ControlButtonStates.Draw)
+            {
+                ControlButton_Click(this, EventArgs.Empty);
+            }
+            else if (controlButtonState == ControlButtonStates.Stop) 
+            {
+                MessageBox.Show("Invalidate operation: you can't load, during drawing process", "Warning",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                return;
+            }
+            else if (controlButtonState == ControlButtonStates.Clean)
+            {
+                ControlButton_Click(this, EventArgs.Empty);
+                ControlButton_Click(this, EventArgs.Empty);
+            }
+            ;
+
+            _polygon.AddNewVertex(pS.vertices[0].position);
+            _polygon.vertices[0].bezierState = pS.vertices[0].bezierState;
+            for (int i = 1; i < pS.vertices.Count; i++)
+            {
+                _polygon.AddNewVertex(pS.vertices[i].position);
+                _polygon.vertices[i].bezierState = pS.vertices[i].bezierState;
+                _polygon.AddNewEdge();
+                _polygon.edges[i - 1].state = pS.edges[i - 1].state;
+                _polygon.edges[i - 1].length = pS.edges[i - 1].length;
+                if (pS.edges[i - 1].bezierControlPoints[0] != null)
+                {
+                    BezierControlPoint b0 = new BezierControlPoint(pS.edges[i - 1].bezierControlPoints[0].position);
+                    BezierControlPoint b1 = new BezierControlPoint(pS.edges[i - 1].bezierControlPoints[1].position);
+                    b0.length = pS.edges[i - 1].bezierControlPoints[0].length;
+                    b1.length = pS.edges[i - 1].bezierControlPoints[1].length;
+                    _polygon.edges[i - 1].bezierControlPoints[0] = b0;
+                    _polygon.edges[i - 1].bezierControlPoints[1] = b1;
+                }
+            }
+            _polygon.AddFinalEdge();
+            _polygon.edges[_polygon.edges.Count - 1].state = pS.edges[_polygon.edges.Count - 1].state;
+            _polygon.edges[_polygon.edges.Count - 1].length = pS.edges[_polygon.edges.Count - 1].length;
+            if (pS.edges[_polygon.edges.Count - 1].bezierControlPoints[0] != null)
+            {
+                BezierControlPoint b0 = new BezierControlPoint(pS.edges[pS.edges.Count - 1].bezierControlPoints[0].position);
+                BezierControlPoint b1 = new BezierControlPoint(pS.edges[pS.edges.Count - 1].bezierControlPoints[1].position);
+                b0.length = pS.edges[pS.edges.Count - 1].bezierControlPoints[0].length;
+                b1.length = pS.edges[pS.edges.Count - 1].bezierControlPoints[1].length;
+                _polygon.edges[_polygon.edges.Count - 1].bezierControlPoints[0] = b0;
+                _polygon.edges[_polygon.edges.Count - 1].bezierControlPoints[1] = b1;
+            }
+            ControlButton_Click(this, EventArgs.Empty);
+
         }
     }
 }

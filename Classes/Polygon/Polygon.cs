@@ -106,8 +106,10 @@ namespace PolygonRedactor.Classes.Polygon
         {
             foreach (Edge e in edges)
             {
+                e.end.leftConstraint = e.state;
                 e.end.leftEdge = e;
                 e.start.rightEdge = e;
+                e.start.rightConstraint = e.state;
             }
         }
 
