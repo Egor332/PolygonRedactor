@@ -99,6 +99,16 @@ namespace PolygonRedactor
                 case ControlButtonStates.Stop:
                     StopDrawing();
                     StartModifying();
+                    if (_polygon.vertices.Count < 3)
+                    {
+                        MessageBox.Show("Invalidate operation: polygon must have at least 3 vertices", "Warning",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                        controlButtonState = (ControlButtonStates)(((int)controlButtonState + 1) % 3);
+                        ControlButton.Text = (controlButtonState).ToString();
+                        StopModifying();
+                        CleanPolygon();
+                    }
                     break;
                 case ControlButtonStates.Clean:
                     StopModifying();
