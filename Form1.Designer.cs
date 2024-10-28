@@ -32,6 +32,7 @@
             bresenhamRadioButton = new RadioButton();
             drawLineRadioButton = new RadioButton();
             InstructionBox = new TextBox();
+            ShowAlgButton = new Button();
             SuspendLayout();
             // 
             // ControlButton
@@ -50,7 +51,7 @@
             bresenhamRadioButton.AutoSize = true;
             bresenhamRadioButton.Location = new Point(12, 71);
             bresenhamRadioButton.Name = "bresenhamRadioButton";
-            bresenhamRadioButton.Size = new Size(100, 24);
+            bresenhamRadioButton.Size = new Size(103, 24);
             bresenhamRadioButton.TabIndex = 1;
             bresenhamRadioButton.TabStop = true;
             bresenhamRadioButton.Text = "Bresenham";
@@ -62,7 +63,7 @@
             drawLineRadioButton.AutoSize = true;
             drawLineRadioButton.Location = new Point(12, 101);
             drawLineRadioButton.Name = "drawLineRadioButton";
-            drawLineRadioButton.Size = new Size(89, 24);
+            drawLineRadioButton.Size = new Size(92, 24);
             drawLineRadioButton.TabIndex = 2;
             drawLineRadioButton.TabStop = true;
             drawLineRadioButton.Text = "DrawLine";
@@ -76,11 +77,22 @@
             InstructionBox.Size = new Size(247, 27);
             InstructionBox.TabIndex = 3;
             // 
+            // ShowAlgButton
+            // 
+            ShowAlgButton.Location = new Point(10, 659);
+            ShowAlgButton.Name = "ShowAlgButton";
+            ShowAlgButton.Size = new Size(274, 29);
+            ShowAlgButton.TabIndex = 4;
+            ShowAlgButton.Text = "Show algorithm description";
+            ShowAlgButton.UseVisualStyleBackColor = true;
+            ShowAlgButton.Click += ShowAlgButton_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1103, 700);
+            Controls.Add(ShowAlgButton);
             Controls.Add(InstructionBox);
             Controls.Add(drawLineRadioButton);
             Controls.Add(bresenhamRadioButton);
@@ -98,5 +110,6 @@
         private RadioButton bresenhamRadioButton;
         private RadioButton drawLineRadioButton;
         private TextBox InstructionBox;
+        private Button ShowAlgButton;
     }
 }

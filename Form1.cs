@@ -11,6 +11,21 @@ namespace PolygonRedactor
 
     public partial class Form1 : Form
     {
+        private const string _algDesc = "Opis algorytmu:\r\nWielokąt powstaje z listy wierzchołków oraz listy krawędzi. " +
+            "Każda krawędź posiada dwa wierzchołki i status swojego ograniczenia. Każdy wierzchołek posiada pozycje, " +
+            "związane z nim krawędzi, oraz ciągłość potencjalnej krzywej Beziera w tym punkcie.\r\nPozycje wierzchołków" +
+            " opisane liczbami całkowitymi.\r\nPrzy przenoszeniu wierzchołka on wysyła sygnały o przenoszeniu do sąsiednich" +
+            " wierzchołków, aby zachowane zostały ograniczenia krawędzi.\r\nPrzypuścimy, że wierzchołek V został " +
+            "przeniesiony na (dx, dy), wtedy wierzchołek U związany z V krawędzią UV musi przynieść się na:\r\nUV " +
+            "pozioma: ten sam dy co V\r\nUV pionowa: ten sam dx co V\r\nUV ma stałą długość: w punkt przecięcia odcinka " +
+            "VU oraz okręgu z centrem w V i promieniem równym długości krawędzi UV.\r\nKrzywa Beziera jest tworzona algorytmem" +
+            " przyrostowym, zachowanie ciągłości zrobione w następny sposób:\r\nDwie sąsiadujące krzywe Beziera:\r\nG1: punkty" +
+            " kontrolne obracają się jakby były na jednej prostej.\r\nC1: punkty kontrolne obracają się jakby były na jednej" +
+            " prostej i zachowują wspólną długość.\r\nKrzywa Beziera sąsiaduje ze zwykłą krawędzią:\r\nG1: wierzchołek wielokąta" +
+            " i punkt kontrolny obracają się jakby były na jednej prostej, niewybrany punkt zachowuję swoją odległość od punkt" +
+            "u średniego.\r\nC1: wierzchołek wielokąta i punkt kontrolny obracają się jakby były na jednej prostej, zachowana" +
+            " zostaję długość odcinków.\r\nUwagi: przy przemieszczeniu punktu kontrolnego krzywej Beziera sąsiadującego z krzywej" +
+            " poziomej/pionowej, zablokowane zostaje przenoszenie punktu kontrolnego wzdłuż osi X/Y odpowiednio.";
         private const string _startInstruction = "Aby narysować nowy wielokąt, trzeba kliknąć przycisk \"Draw\".";
         private const string _drawingInstruction = "Aby dodać nowy punkt, trzeba kliknąć lewy przycisk myszy.\r\n" +
             "Aby skończyć rysowanie wielokąta, nie trzeba zamykać wielokąta, trzeba kliknąć \"Stop\"." +
@@ -32,6 +47,7 @@ namespace PolygonRedactor
             "Długość krawędzi wskazana w pikselach.\r\n" +
             "Krawędzi z ograniczniami nie można przenosić";
 
+
         private bool _isDrawing = false;
         private Point _startPoint;
         private Point _currentPoint;
@@ -48,6 +64,7 @@ namespace PolygonRedactor
         private bool _isPolygonSelected = false;
 
         protected ControlButtonStates controlButtonState = ControlButtonStates.Draw;
+        private bool isAlg = false;
 
         private Bresenham? _bresenham = new Bresenham();
 
@@ -67,7 +84,7 @@ namespace PolygonRedactor
             _contextMenuVertex.Items.Add("Set C1", null, Option_SetC1);
             ControlButton.Text = (controlButtonState).ToString();
             InstructionBox.Multiline = true;
-            InstructionBox.Height = this.Height - 161;
+            InstructionBox.Height = this.Height - 215;
             InstructionBox.ScrollBars = ScrollBars.Vertical;
             InstructionBox.Text = _startInstruction;
             bresenhamRadioButton.Checked = true;
@@ -126,7 +143,7 @@ namespace PolygonRedactor
 
         private void StartDrawing()
         {
-            InstructionBox.Text = _drawingInstruction;
+            if (isAlg== false) InstructionBox.Text = _drawingInstruction;
             this.MouseDown += Draw_MouseDown;
             this.MouseMove += Draw_MouseMove;
         }
@@ -140,7 +157,7 @@ namespace PolygonRedactor
             _polygon.AddFinalEdge();
             this.MouseDown -= Draw_MouseDown;
             this.MouseMove -= Draw_MouseMove;
-            _isDrawing = false;            
+            _isDrawing = false;
             this.Invalidate();
         }
 
@@ -194,14 +211,14 @@ namespace PolygonRedactor
 
         private void StartModifying()
         {
-            InstructionBox.Text = _modifyInstruction;
+            if (isAlg == false) InstructionBox.Text = _modifyInstruction;
             this.MouseDown += Modify_MouseDown;
             this.MouseMove += Modify_MouseMove;
         }
 
         private void StopModifying()
         {
-            InstructionBox.Text = _startInstruction;
+            if (isAlg == false) InstructionBox.Text = _startInstruction;
             this.MouseDown -= Modify_MouseDown;
             this.MouseMove -= Modify_MouseMove;
         }
@@ -244,7 +261,7 @@ namespace PolygonRedactor
                     foreach (Edge edge in _polygon.edges)
                     {
                         if (edge.state != EdgeStates.Bezier) continue;
-                        
+
                         if (edge.bezierControlPoints[0].CheckIsInArea(e.Location))
                         {
                             _bezierSelected = edge.bezierControlPoints[0];
@@ -379,7 +396,7 @@ namespace PolygonRedactor
                 }
                 else
                 {
-                    e.Graphics.DrawLine(new Pen(_bresenham.brush),_startPoint, _currentPoint);
+                    e.Graphics.DrawLine(new Pen(_bresenham.brush), _startPoint, _currentPoint);
                 }
             }
         }
@@ -409,7 +426,7 @@ namespace PolygonRedactor
             _vertexSelected.isSelected = false;
             _polygon.ResetBezier();
             _vertexSelected = null;
-            
+
             this.Invalidate();
         }
 
@@ -428,7 +445,7 @@ namespace PolygonRedactor
             _polygon.ResetAllLengthes();
             _polygon.AddNewVertex(_edgeSelected);
             _edgeSelected.isSelected = false;
-            _edgeSelected = null;            
+            _edgeSelected = null;
             _polygon.ResetBezier();
             this.Invalidate();
         }
@@ -535,6 +552,32 @@ namespace PolygonRedactor
         private void drawLineRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             this.Invalidate();
+        }
+
+        private void ShowAlgButton_Click(object sender, EventArgs e)
+        {
+            if (isAlg)
+            {
+                isAlg = false;
+                switch (controlButtonState)
+                {
+                    case ControlButtonStates.Draw:
+                        InstructionBox.Text = _startInstruction;
+                        break;
+                    case ControlButtonStates.Stop:
+                        InstructionBox.Text = _drawingInstruction;
+                        break;
+                    case ControlButtonStates.Clean:
+                        InstructionBox.Text = _modifyInstruction;
+                        break;
+                }
+            }
+            else
+            {
+                isAlg = true;
+                InstructionBox.Text = _algDesc;
+                ShowAlgButton.Text = "Show user manual";
+            }
         }
     }
 }
