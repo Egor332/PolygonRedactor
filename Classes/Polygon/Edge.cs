@@ -150,9 +150,10 @@ namespace PolygonRedactor.Classes.Polygon
             //start.rightConstraint = EdgeStates.None;
             //end.leftConstraint = EdgeStates.None;
             //state = EdgeStates.None;
-
-            start.MovePoint(p, pressPoint.Value);            
+            
+            start.MovePoint(p, pressPoint.Value);
             end.MovePoint(p, pressPoint.Value);
+            
 
             //state = stateBuffer;
             //start.rightConstraint = stateBuffer;

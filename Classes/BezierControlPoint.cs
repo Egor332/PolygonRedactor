@@ -120,8 +120,25 @@ namespace PolygonRedactor.Classes
             {
                 if (v.bezierState == BezierStates.G1)
                 {
-                    if (v.leftConstraint == EdgeStates.Vertical) this.position.X -= dx;
-                    else if (v.leftConstraint == EdgeStates.Horizontal) this.position.Y -= dy;
+                    if (v.leftConstraint == EdgeStates.Vertical) 
+                    {                        
+                        this.position.X -= dx;
+                        if ((this.position.Y < v.position.Y) == (v.leftEdge.start.position.Y < v.position.Y))
+                        {
+                            int swipe = v.position.Y - v.leftEdge.start.position.Y;
+                            v.leftEdge.start.MovePointDelta(0, 2 * swipe);
+                        }
+
+                    }
+                    else if (v.leftConstraint == EdgeStates.Horizontal) 
+                    { 
+                        this.position.Y -= dy;
+                        if ((this.position.X < v.position.X) == (v.leftEdge.start.position.X < v.position.X))
+                        {
+                            int swipe = v.position.X - v.leftEdge.start.position.X;
+                            v.leftEdge.start.MovePointDelta(2 * swipe, 0);
+                        }
+                    }
                     else KeepG1Vertex(v, v.leftEdge.start, v.leftEdge.length.Value);
                 }
                 else // C1
@@ -152,8 +169,25 @@ namespace PolygonRedactor.Classes
             {
                 if (v.bezierState == BezierStates.G1)
                 {
-                    if (v.rightConstraint == EdgeStates.Vertical) this.position.X -= dx;
-                    else if (v.rightConstraint == EdgeStates.Horizontal) this.position.Y -= dy;
+                    if (v.rightConstraint == EdgeStates.Vertical)
+                    {
+                        this.position.X -= dx;
+                        if ((this.position.Y < v.position.Y) == (v.rightEdge.end.position.Y < v.position.Y))
+                        {
+                            int swipe = v.position.Y - v.rightEdge.end.position.Y;
+                            v.rightEdge.end.MovePointDelta(0, 2 * swipe);
+                        }
+                    }
+                    else if (v.rightConstraint == EdgeStates.Horizontal)
+                    {
+                        this.position.Y -= dy;
+                        if ((this.position.X < v.position.X) == (v.rightEdge.end.position.X < v.position.X))
+                        {
+                            int swipe = v.position.X - v.rightEdge.end.position.X;
+                            v.rightEdge.end.MovePointDelta(2 * swipe, 0);
+                        }
+                    }
+
                     else KeepG1Vertex(v, v.rightEdge.end, v.rightEdge.length.Value);
                 }
                 else // C1
@@ -193,6 +227,7 @@ namespace PolygonRedactor.Classes
             int dx = this.position.X - v.position.X;
             int dy = this.position.Y - v.position.Y;
             int lengthV = Edge.Distance(v.position, this.position);
+            if (lengthV == 0) { return; }
             int xChange = Convert.ToInt32((((double)dx / (double)lengthV) * (len)));
             int yChange = Convert.ToInt32((((double)dy / (double)lengthV) * (len)));
             c.MovePoint(v.position.X - xChange, v.position.Y - yChange);
@@ -203,6 +238,7 @@ namespace PolygonRedactor.Classes
             int dx = this.position.X - v.position.X;
             int dy = this.position.Y - v.position.Y;
             int lengthV = Edge.Distance(v.position, this.position);
+            if (lengthV == 0) return;
             int xChange = Convert.ToInt32(Math.Floor(((double)dx / (double)lengthV) * (p.length)));
             int yChange = Convert.ToInt32(Math.Floor(((double)dy / (double)lengthV) * (p.length)));
             p.MovePointEnforce(v.position.X - xChange, v.position.Y - yChange);

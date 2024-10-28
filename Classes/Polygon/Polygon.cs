@@ -299,6 +299,7 @@ namespace PolygonRedactor.Classes.Polygon
             int dx = m.position.X - v.position.X;
             int dy = m.position.Y - v.position.Y;
             int len = Edge.Distance(m.position, v.position);
+            if (len == 0) { p.MovePointEnforce(m.position.X, m.position.Y); return; }
             int relatedX = Convert.ToInt32((((double)dx / (double)len) * (p.length)));
             int relatedY = Convert.ToInt32((((double)dy / (double)len) * (p.length)));
             p.MovePointEnforce(m.position.X + relatedX, m.position.Y + relatedY);
@@ -320,6 +321,7 @@ namespace PolygonRedactor.Classes.Polygon
                 int dx = m.position.X - v.position.X;
                 int dy = m.position.Y - v.position.Y;
                 int len = Edge.Distance(m.position, v.position);
+                if (len == 0) { p.MovePointEnforce(m.position.X, m.position.Y); return; }
                 int relatedX = Convert.ToInt32((((double)dx / (double)len) * ((double)len/3.0)));
                 int relatedY = Convert.ToInt32((((double)dy / (double)len) * ((double)len/3.0)));
                 p.MovePointEnforce(m.position.X + relatedX, m.position.Y + relatedY);

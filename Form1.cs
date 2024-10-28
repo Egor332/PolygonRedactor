@@ -4,6 +4,7 @@ using PolygonRedactor.Enums;
 using System.ComponentModel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace PolygonRedactor
 {
@@ -66,7 +67,7 @@ namespace PolygonRedactor
             _contextMenuVertex.Items.Add("Set C1", null, Option_SetC1);
             ControlButton.Text = (controlButtonState).ToString();
             InstructionBox.Multiline = true;
-            InstructionBox.Height = this.Height - 131;
+            InstructionBox.Height = this.Height - 161;
             InstructionBox.ScrollBars = ScrollBars.Vertical;
             InstructionBox.Text = _startInstruction;
             bresenhamRadioButton.Checked = true;
@@ -327,6 +328,11 @@ namespace PolygonRedactor
                         break;
                     }
                 }
+            }
+            else if ((e.Button == MouseButtons.Right) && (_edgeSelected != null))
+            {
+                _edgeSelected.isSelected = false;
+                _edgeSelected = null;
             }
             this.Invalidate();
         }
