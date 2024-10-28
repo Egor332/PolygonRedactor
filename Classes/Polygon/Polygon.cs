@@ -32,6 +32,7 @@ namespace PolygonRedactor.Classes.Polygon
         {
             foreach (Edge e in edges)
             {
+                DrawConstraint(e, bresenham.g);
                 if (e.isSelected)
                 {
                     bresenham.brush = new SolidBrush(Color.Red);
@@ -53,7 +54,28 @@ namespace PolygonRedactor.Classes.Polygon
                     else e.DrawBezier(bresenham.g, bresenham.brush);
                 }
                 
+                
+                
             }
+        }
+
+        private void DrawConstraint(Edge e, Graphics g)
+        {            
+            Point center = e.FindNewStatePosition();
+            Pen pen = new Pen(Color.Green);
+            switch (e.state)
+            {
+                case EdgeStates.Vertical:
+                    g.DrawLine(pen, new Point(center.X, center.Y - 5), new Point(center.X, center.Y + 5));
+                    break;
+                case EdgeStates.Horizontal:
+                    g.DrawLine(pen, new Point(center.X - 5, center.Y), new Point(center.X + 5, center.Y));
+                    break;
+                case EdgeStates.Fixed:
+                    g.FillEllipse(Brushes.Green, center.X - 6, center.Y - 6, 12, 12);
+                    break;
+            }
+            
         }
 
         private void DrawVertices(System.Drawing.Graphics g)
@@ -131,14 +153,16 @@ namespace PolygonRedactor.Classes.Polygon
             }
             int x = (selectedEdge.start.position.X + selectedEdge.end.position.X) / 2;
             int y = (selectedEdge.start.position.Y + selectedEdge.end.position.Y) / 2;
-
+            Vertex rightV = selectedEdge.end;
             Vertex newVertex = new Vertex(new Point(x, y));
-
+            newVertex.leftEdge = selectedEdge;
+            
             vertices.Insert(edgeNumber + 1, newVertex);
 
             Edge newEdge = new Edge(newVertex, selectedEdge.end);
-            
+            newVertex.rightEdge = newEdge;
             edges.Insert(edgeNumber + 1, newEdge);
+            rightV.leftEdge = newEdge;
             selectedEdge.end = newVertex;
             
         }
@@ -182,6 +206,8 @@ namespace PolygonRedactor.Classes.Polygon
             if (i == vertices.Count - 1) nextV = 0;
             else nextV = i + 1;
             e.end = vertices[nextV];
+            e.end.leftEdge = e;
+            e.start.rightEdge = e;
             
             edges.RemoveAt(i);
             vertices.RemoveAt(i);
@@ -238,7 +264,65 @@ namespace PolygonRedactor.Classes.Polygon
         {
             foreach (Vertex v in vertices)
             {
+                if ((v.leftConstraint != EdgeStates.Bezier) && (v.leftEdge.start.leftConstraint == EdgeStates.Bezier))
+                {
+                    BezierControlPoint associatedPoint = v.leftEdge.start.leftEdge.bezierControlPoints[1];
+                    Vertex midleVertex = v.leftEdge.start;
+                    BezierStates state = v.leftEdge.start.bezierState;
+                    if (state != BezierStates.G0) KeepContinuous(v, associatedPoint, midleVertex, state, v.leftEdge);
+                }
+                if ((v.rightConstraint != EdgeStates.Bezier) && (v.rightEdge.end.rightConstraint == EdgeStates.Bezier))
+                {
+                    BezierControlPoint associatedPoint = v.rightEdge.end.rightEdge.bezierControlPoints[0];
+                    Vertex midleVertex = v.rightEdge.end;
+                    BezierStates state = v.rightEdge.end.bezierState;
+                    if (state != BezierStates.G0) KeepContinuous(v, associatedPoint, midleVertex, state, v.rightEdge);
+                }
+            }
+        }
 
+        private void KeepContinuous(Vertex v, BezierControlPoint p, Vertex m, BezierStates state, Edge e)
+        {
+            if (p.isSelected == true) return;
+            if (state == BezierStates.G1)
+            {
+                KeepG1(v, p, m);
+            }
+            else
+            {
+                KeepC1(v, p, m, e);
+            }
+        }
+
+        private void KeepG1(Vertex v, BezierControlPoint p, Vertex m)
+        {
+            int dx = m.position.X - v.position.X;
+            int dy = m.position.Y - v.position.Y;
+            int len = Edge.Distance(m.position, v.position);
+            int relatedX = Convert.ToInt32((((double)dx / (double)len) * (p.length)));
+            int relatedY = Convert.ToInt32((((double)dy / (double)len) * (p.length)));
+            p.MovePointEnforce(m.position.X + relatedX, m.position.Y + relatedY);
+        }
+
+        private void KeepC1(Vertex v, BezierControlPoint p, Vertex m, Edge e)
+        {
+            if (e.state == EdgeStates.Fixed)
+            {
+                int dx = m.position.X - v.position.X;
+                int dy = m.position.Y - v.position.Y;
+                int len = Edge.Distance(m.position, v.position);
+                int relatedX = Convert.ToInt32((((double)dx / (double)len) * ((double)e.length / 3.0)));
+                int relatedY = Convert.ToInt32((((double)dy / (double)len) * ((double)e.length / 3.0)));
+                p.MovePointEnforce(m.position.X + relatedX, m.position.Y + relatedY);
+            }
+            else
+            {
+                int dx = m.position.X - v.position.X;
+                int dy = m.position.Y - v.position.Y;
+                int len = Edge.Distance(m.position, v.position);
+                int relatedX = Convert.ToInt32((((double)dx / (double)len) * ((double)len/3.0)));
+                int relatedY = Convert.ToInt32((((double)dy / (double)len) * ((double)len/3.0)));
+                p.MovePointEnforce(m.position.X + relatedX, m.position.Y + relatedY);
             }
         }
     }

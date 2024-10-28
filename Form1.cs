@@ -38,6 +38,7 @@ namespace PolygonRedactor
             _contextMenu.Items.Add("Set horizontal", null, Option3_SetHorizontal);
             _contextMenu.Items.Add("Set fixed", null, Option4_SetFixed);
             _contextMenu.Items.Add("Bezier", null, Option5_Bezier);
+            _contextMenu.Items.Add("Remove constraint", null, Option6_Unset);
             _contextMenuVertex.Items.Add("Delete vertex", null, Option_DeleteVertex);
             _contextMenuVertex.Items.Add("Set G0", null, Option_SetG0);
             _contextMenuVertex.Items.Add("Set G1", null, Option_SetG1);
@@ -79,6 +80,10 @@ namespace PolygonRedactor
 
         private void StopDrawing()
         {
+            //foreach (Edge e in _polygon.edges)
+            //{
+            //    this.Controls.Add(e.stateLabel);
+            //}
             _polygon.AddFinalEdge();
             this.MouseDown -= Draw_MouseDown;
             this.MouseMove -= Draw_MouseMove;
@@ -88,6 +93,10 @@ namespace PolygonRedactor
 
         private void CleanPolygon()
         {
+            //foreach (Edge e in _polygon.edges) 
+            //{
+            //    this.Controls.Remove(e.stateLabel);
+            //}
             _polygon = new Polygon();
             _vertexSelected = null;
             _edgeSelected = null;
@@ -292,6 +301,7 @@ namespace PolygonRedactor
             if (_bezierSelected != null)
             {
                 _bezierSelected.MovePoint(e.Location, _asociatedVertex);
+                _polygon.ResetBezier();
                 this.Invalidate();
             }
         }
@@ -316,9 +326,11 @@ namespace PolygonRedactor
 
         private void Option_DeleteVertex(object sender, EventArgs e)
         {
+            _polygon.ResetAllLengthes();
             _polygon.RemoveVertex(_vertexSelected);
             _vertexSelected.isSelected = false;
             _vertexSelected = null;
+            _polygon.ResetBezier();
             this.Invalidate();
         }
 
@@ -332,31 +344,38 @@ namespace PolygonRedactor
 
         private void Option_SetG1(object sender, EventArgs e)
         {
+            _polygon.ResetAllLengthes();
             _vertexSelected.SetBezierState(BezierStates.G1);
             _vertexSelected.isSelected = false;
+            _polygon.ResetBezier();
             _vertexSelected = null;
+            
             this.Invalidate();
         }
 
         private void Option_SetC1(object sender, EventArgs e)
         {
+            _polygon.ResetAllLengthes();
             _vertexSelected.SetBezierState(BezierStates.C1);
             _vertexSelected.isSelected = false;
             _vertexSelected = null;
+            _polygon.ResetBezier();
             this.Invalidate();
         }
 
         private void Option1_AddPoint(object sender, EventArgs e)
         {
+            _polygon.ResetAllLengthes();
             _polygon.AddNewVertex(_edgeSelected);
             _edgeSelected.isSelected = false;
-            _edgeSelected = null;
+            _edgeSelected = null;            
+            _polygon.ResetBezier();
             this.Invalidate();
         }
 
         public void Option2_SetVertical(object sender, EventArgs e)
         {
-
+            _polygon.ResetAllLengthes();
             if (IsAvaliableConstraint(EdgeStates.Vertical))
             {
                 _edgeSelected.ChangeState(EdgeStates.Vertical);
@@ -370,11 +389,13 @@ namespace PolygonRedactor
             }
             _edgeSelected.isSelected = false;
             _edgeSelected = null;
+            _polygon.ResetBezier();
             this.Invalidate();
         }
 
         public void Option3_SetHorizontal(object sender, EventArgs e)
         {
+            _polygon.ResetAllLengthes();
             if (IsAvaliableConstraint(EdgeStates.Horizontal))
             {
                 _edgeSelected.ChangeState(EdgeStates.Horizontal);
@@ -388,6 +409,7 @@ namespace PolygonRedactor
             }
             _edgeSelected.isSelected = false;
             _edgeSelected = null;
+            _polygon.ResetBezier();
             this.Invalidate();
         }
 
@@ -417,17 +439,31 @@ namespace PolygonRedactor
 
         public void Option4_SetFixed(object sender, EventArgs e)
         {
+            _polygon.ResetAllLengthes();
             _edgeSelected.ChangeState(EdgeStates.Fixed);
             _edgeSelected.isSelected = false;
             _edgeSelected = null;
+            _polygon.ResetBezier();
             this.Invalidate();
         }
 
         public void Option5_Bezier(object sender, EventArgs e)
         {
+            _polygon.ResetAllLengthes();
             _edgeSelected.ChangeState(EdgeStates.Bezier);
             _edgeSelected.isSelected = false;
             _edgeSelected = null;
+            // _polygon.ResetBezier();
+            this.Invalidate();
+        }
+
+        public void Option6_Unset(object sender, EventArgs e)
+        {
+            _polygon.ResetAllLengthes();
+            _edgeSelected.ChangeState(EdgeStates.None);
+            _edgeSelected.isSelected = false;
+            _edgeSelected = null;
+            _polygon.ResetBezier();
             this.Invalidate();
         }
 

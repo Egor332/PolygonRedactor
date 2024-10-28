@@ -14,6 +14,7 @@ namespace PolygonRedactor.Classes.Polygon
         public Vertex start;
         public Vertex end;
         public EdgeStates state = EdgeStates.None;
+        public Label stateLabel;
         public int? length = null;
         public BezierControlPoint?[] bezierControlPoints = new BezierControlPoint?[2];
         // public (int dx, int dy)?[] bezierControlPointsSifts = new (int, int)?[2];
@@ -26,6 +27,10 @@ namespace PolygonRedactor.Classes.Polygon
 
         public Edge(Vertex start, Vertex end)
         {
+            //stateLabel = new Label();
+            //stateLabel.Width = 1;
+            //stateLabel.Height = 1;
+            //stateLabel.BackColor = Color.Transparent;
             this.start = start;
             this.end = end;
         }
@@ -37,6 +42,8 @@ namespace PolygonRedactor.Classes.Polygon
             end.leftConstraint = EdgeStates.None;
             switch (state)
             {
+                case EdgeStates.None:
+                    break;
                 case EdgeStates.Vertical:
                     SetVertical();
                     break;
@@ -243,6 +250,23 @@ namespace PolygonRedactor.Classes.Polygon
             g.DrawLine(dashedPen, end.position, bezierControlPoints[1].position);
 
 
+        }
+
+        public Point FindNewStatePosition()
+        {
+            int x = (start.position.X + end.position.X) / 2;
+            int y = (end.position.Y + start.position.Y) / 2;
+            switch (state)
+            {                
+                case EdgeStates.Vertical:
+                    x += 4;
+                    break;
+                case EdgeStates.Horizontal:
+                    y += 4;
+                    break;
+                
+            }
+            return new Point(x, y);
         }
 
         private bool ValidatePositionOnAxis(int x1, int x2, int size)

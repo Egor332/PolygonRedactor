@@ -77,10 +77,6 @@ namespace PolygonRedactor.Classes.Polygon
                     (int xChange, int yChange) = DoFixedEdge(leftEdge.start, leftEdge.length.Value);
                     leftEdge.start.DoLeftCycle(xChange, yChange);
                 }
-                //if (leftConstraint == EdgeStates.Bezier)
-                //{
-                //    leftEdge.bezierControlPoints[1].MovePointDeltaEnforce(dx, dy);
-                //}
             }
             if (rightEdge != null)
             {
@@ -97,35 +93,9 @@ namespace PolygonRedactor.Classes.Polygon
                     (int xChange, int yChange) = DoFixedEdge(rightEdge.end, rightEdge.length.Value);
                     rightEdge.end.DoRightCycle(xChange, yChange);
                 }
-                //if (rightConstraint == EdgeStates.Bezier)
-                //{
-                //    rightEdge.bezierControlPoints[0].MovePointDeltaEnforce(dx, dy);
-                //}
+                
             }
-            //if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
-            //{
-            //    leftEdge.start.MovePointDelta(0, dy);
-            //}
-            //if ((leftConstraint == EdgeStates.Vertical) && (dx != 0))
-            //{
-            //    leftEdge.start.MovePointDelta(dx, 0);
-            //}
-            //if (leftConstraint == EdgeStates.Fixed)
-            //{
-            //    DoFixedEdge(leftEdge.start, leftEdge.length.Value);
-            //}
-            //if ((rightConstraint == EdgeStates.Horizontal) && (dy != 0))
-            //{
-            //    rightEdge.end.MovePointDelta(0, dy);
-            //}
-            //if ((rightConstraint == EdgeStates.Vertical) && (dx != 0))
-            //{
-            //    rightEdge.end.MovePointDelta(dx, 0);
-            //}
-            //if ((rightConstraint == EdgeStates.Fixed))
-            //{
-            //    DoFixedEdge(rightEdge.end, rightEdge.length.Value); 
-            //}
+
 
             
         }
