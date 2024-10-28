@@ -389,11 +389,12 @@ namespace PolygonRedactor
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+            _bresenham.isWu = wuRadioButton.Checked;
             _bresenham.g = e.Graphics;
-            _polygon.DrawPolygon(_bresenham, e.Graphics, bresenhamRadioButton.Checked);
+            _polygon.DrawPolygon(_bresenham, e.Graphics, (bresenhamRadioButton.Checked || wuRadioButton.Checked));
             if (_isDrawing)
             {
-                if (bresenhamRadioButton.Checked)
+                if (bresenhamRadioButton.Checked || wuRadioButton.Checked)
                 {
                     _bresenham.Draw(_startPoint, _currentPoint);
                 }

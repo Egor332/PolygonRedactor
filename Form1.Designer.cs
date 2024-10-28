@@ -35,6 +35,7 @@
             ShowAlgButton = new Button();
             SaveButton = new Button();
             LoadButton = new Button();
+            wuRadioButton = new RadioButton();
             SuspendLayout();
             // 
             // ControlButton
@@ -109,11 +110,23 @@
             LoadButton.UseVisualStyleBackColor = true;
             LoadButton.Click += LoadButton_Click;
             // 
+            // wuRadioButton
+            // 
+            wuRadioButton.AutoSize = true;
+            wuRadioButton.Location = new Point(131, 101);
+            wuRadioButton.Name = "wuRadioButton";
+            wuRadioButton.Size = new Size(80, 24);
+            wuRadioButton.TabIndex = 7;
+            wuRadioButton.TabStop = true;
+            wuRadioButton.Text = "Use Wu";
+            wuRadioButton.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1103, 700);
+            Controls.Add(wuRadioButton);
             Controls.Add(LoadButton);
             Controls.Add(SaveButton);
             Controls.Add(ShowAlgButton);
@@ -137,5 +150,6 @@
         private Button ShowAlgButton;
         private Button SaveButton;
         private Button LoadButton;
+        private RadioButton wuRadioButton;
     }
 }
