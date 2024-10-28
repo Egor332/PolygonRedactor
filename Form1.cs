@@ -45,6 +45,22 @@ namespace PolygonRedactor
             _contextMenuVertex.Items.Add("Set C1", null, Option_SetC1);
             ControlButton.Text = (controlButtonState).ToString();
             bresenhamRadioButton.Checked = true;
+            ControlButton_Click(this, EventArgs.Empty);
+            _polygon.AddNewVertex(new Point(150 + 200, 150 + 200));
+            _polygon.AddNewVertex(new Point(230 + 200, 150 + 200));
+            _polygon.AddNewEdge();
+            _polygon.AddNewVertex(new Point(230 + 200, 300 + 200));
+            _polygon.AddNewEdge();
+            _polygon.AddNewVertex(new Point(120 + 200, 300 + 200));
+            _polygon.AddNewEdge();
+            ControlButton_Click(this, EventArgs.Empty);
+            _edgeSelected = _polygon.edges[0];
+            Option5_Bezier(this, EventArgs.Empty);
+            _edgeSelected = _polygon.edges[1];
+            Option2_SetVertical(this, EventArgs.Empty);
+            _edgeSelected = _polygon.edges[2];
+            Option3_SetHorizontal(this, EventArgs.Empty);
+
         }
 
         private void ControlButton_Click(object sender, EventArgs e)

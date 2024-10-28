@@ -66,11 +66,11 @@ namespace PolygonRedactor.Classes.Polygon
             {
                 if ((leftConstraint == EdgeStates.Horizontal) && (dy != 0))
                 {
-                    leftEdge.start.MovePointDelta(0, position.Y - leftEdge.start.position.Y);
+                    leftEdge.start.DoLeftCycle(0, position.Y - leftEdge.start.position.Y);
                 }
                 if ((leftConstraint == EdgeStates.Vertical) && (dx != 0))
                 {
-                    leftEdge.start.MovePointDelta(position.X - leftEdge.start.position.X, 0);
+                    leftEdge.start.DoLeftCycle(position.X - leftEdge.start.position.X, 0);
                 }
                 if (leftConstraint == EdgeStates.Fixed)
                 {
@@ -82,11 +82,11 @@ namespace PolygonRedactor.Classes.Polygon
             {
                 if ((rightConstraint == EdgeStates.Horizontal) && (dy != 0))
                 {
-                    rightEdge.end.MovePointDelta(0, position.Y - rightEdge.end.position.Y);
+                    rightEdge.end.DoRightCycle(0, position.Y - rightEdge.end.position.Y);
                 }
                 if ((rightConstraint == EdgeStates.Vertical) && (dx != 0))
                 {
-                    rightEdge.end.MovePointDelta(position.X - rightEdge.end.position.X, 0);
+                    rightEdge.end.DoRightCycle(position.X - rightEdge.end.position.X, 0);
                 }
                 if ((rightConstraint == EdgeStates.Fixed))
                 {
